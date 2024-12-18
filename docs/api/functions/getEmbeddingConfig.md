@@ -1,4 +1,4 @@
-[@okcashpro/okai v0.1.5-alpha.5](../index.md) / getEmbeddingConfig
+[@okcashpro/okai v0.1.7-alpha.1](../index.md) / getEmbeddingConfig
 
 # Function: getEmbeddingConfig()
 

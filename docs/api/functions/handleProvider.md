@@ -1,4 +1,4 @@
-[@okcashpro/okai v0.1.5-alpha.5](../index.md) / handleProvider
+[@okcashpro/okai v0.1.7-alpha.1](../index.md) / handleProvider
 
 # Function: handleProvider()
 
@@ -20,4 +20,4 @@ Configuration options specific to the provider.
 
 ## Defined in
 
-[packages/core/src/generation.ts:1350](https://github.com/okcashpro/okai/blob/main/packages/core/src/generation.ts#L1350)
+[packages/core/src/generation.ts:1351](https://github.com/okcashpro/okai/blob/main/packages/core/src/generation.ts#L1351)

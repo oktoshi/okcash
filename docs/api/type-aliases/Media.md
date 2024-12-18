@@ -1,4 +1,4 @@
-[@okcashpro/okai v0.1.5-alpha.5](../index.md) / Media
+[@okcashpro/okai v0.1.7-alpha.1](../index.md) / Media
 
 # Type Alias: Media
 
@@ -52,4 +52,4 @@ Content type
 
 ## Defined in
 
-[packages/core/src/types.ts:546](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L546)
+[packages/core/src/types.ts:548](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L548)

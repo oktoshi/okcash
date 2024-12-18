@@ -1,4 +1,4 @@
-[@okcashpro/okai v0.1.5-alpha.5](../index.md) / generateCaption
+[@okcashpro/okai v0.1.7-alpha.1](../index.md) / generateCaption
 
 # Function: generateCaption()
 
@@ -26,4 +26,4 @@
 
 ## Defined in
 
-[packages/core/src/generation.ts:1175](https://github.com/okcashpro/okai/blob/main/packages/core/src/generation.ts#L1175)
+[packages/core/src/generation.ts:1176](https://github.com/okcashpro/okai/blob/main/packages/core/src/generation.ts#L1176)

@@ -1,4 +1,4 @@
-[@okcashpro/okai v0.1.5-alpha.5](../index.md) / generateObject
+[@okcashpro/okai v0.1.7-alpha.1](../index.md) / generateObject
 
 # Function: generateObject()
 
@@ -24,4 +24,4 @@ Configuration options for generating objects.
 
 ## Defined in
 
-[packages/core/src/generation.ts:1265](https://github.com/okcashpro/okai/blob/main/packages/core/src/generation.ts#L1265)
+[packages/core/src/generation.ts:1266](https://github.com/okcashpro/okai/blob/main/packages/core/src/generation.ts#L1266)

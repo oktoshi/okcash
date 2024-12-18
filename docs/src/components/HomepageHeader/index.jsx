@@ -12,11 +12,11 @@ function HomepageHeader() {
         <div className={styles.heroSection}>
           <div>
             <h1 className={styles.heroTitle}>
-              okai is a simple, fast, and{" "}
+              Okai is the AI framework {" "}
               <span className={styles.headerTextGradient}>
-                lightweight AI agent
+              powering the future of OK
               </span>{" "}
-              framework
+              and Crypto
             </h1>
             <p className={styles.heroSubtitle}>{siteConfig.tagline}</p>
             <div className={styles.buttonGroup}>
@@ -24,12 +24,12 @@ function HomepageHeader() {
                 className="button button--primary button--lg"
                 href="./docs/intro/#"
               >
-                Get Started
+                Start Building with Okai
               </a>
               <div className={styles.githubButton}>
                 <iframe
                   src="https://ghbtns.com/github-btn.html?user=OK&repo=okai&type=star&count=true&size=large"
-                  frameborder="0"
+                  frameBorder="0"
                   scrolling="0"
                   width="135"
                   height="30"

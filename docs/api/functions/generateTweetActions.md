@@ -1,4 +1,4 @@
-[@okcashpro/okai v0.1.5-alpha.5](../index.md) / generateTweetActions
+[@okcashpro/okai v0.1.7-alpha.1](../index.md) / generateTweetActions
 
 # Function: generateTweetActions()
 
@@ -20,4 +20,4 @@
 
 ## Defined in
 
-[packages/core/src/generation.ts:1614](https://github.com/okcashpro/okai/blob/main/packages/core/src/generation.ts#L1614)
+[packages/core/src/generation.ts:1615](https://github.com/okcashpro/okai/blob/main/packages/core/src/generation.ts#L1615)

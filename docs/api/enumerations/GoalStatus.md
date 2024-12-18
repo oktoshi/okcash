@@ -1,4 +1,4 @@
-[@okcashpro/okai v0.1.5-alpha.5](../index.md) / GoalStatus
+[@okcashpro/okai v0.1.7-alpha.1](../index.md) / GoalStatus
 
 # Enumeration: GoalStatus
 

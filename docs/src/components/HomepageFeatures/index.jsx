@@ -5,35 +5,29 @@ import styles from "./styles.module.css";
 
 const FeatureList = [
   {
+    icon: "🚀",
+    title: "Multi-Agent Multichain Framework",
+    description: (
+      <>
+        Deploy smart, autonomous AI agents 24/7 to supercharge your community and platforms—integrating seamlessly with Discord, Twitter, Telegram, and beyond. Voice, text, or media—OKai does it all.
+      </>
+    ),
+  },
+  {
     icon: "🤖",
-    title: "Multi-Agent Framework",
+    title: "Leading AI, Limitless Potential",
     description: (
       <>
-        Build and deploy <strong>autonomous AI agents</strong> with consistent
-        personalities across Discord, Twitter, and Telegram. Full support for
-        voice, text, and media interactions.
+        Powered by top AI models like GPT-4, Llama, and more, OKai delivers advanced capabilities: smart memory, rapid workflows, and seamless document handling. Future-ready tools to elevate your success.
       </>
     ),
   },
   {
-    icon: "🧠",
-    title: "Advanced Capabilities",
+    icon: "🌟",
+    title: "Customizable to Your Vision",
     description: (
       <>
-        Built-in RAG memory system, document processing, media analysis, and
-        autonomous trading capabilities. Supports multiple AI models including
-        Llama, GPT-4, and Claude.
-      </>
-    ),
-  },
-  {
-    icon: "🔌",
-    title: "Extensible Design",
-    description: (
-      <>
-        Create custom actions, add new platform integrations, and extend
-        functionality through a <b>modular plugin system</b>. Full TypeScript
-        support.
+        Shape OKai to fit your needs with its modular, plugin-friendly design. Extend, connect, and innovate—fully powered by TypeScript. Your tools, your way, your future.
       </>
     ),
   },

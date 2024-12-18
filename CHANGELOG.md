@@ -286,9 +286,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Changelog
 
-## [v0.1.6-alpha.4](https://github.com/okcashpro/okai/tree/v0.1.6-alpha.4) (2024-12-17)
+## [v0.1.7-alpha.1](https://github.com/okcashpro/okai/tree/v0.1.7-alpha.1) (2024-12-17)
 
-[Full Changelog](https://github.com/okcashpro/okai/compare/v0.1.6-alpha.3...v0.1.6-alpha.4)
+[Full Changelog](https://github.com/okcashpro/okai/compare/v0.1.6-alpha.3...v0.1.7-alpha.1)
 
 **Fixed bugs:**
 
@@ -296,7 +296,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Merged pull requests:**
 
-- chore: bump version to 0.1.6-alpha.4 [\#1159](https://github.com/okcashpro/okai/pull/1159) ([shakkernerd](https://github.com/shakkernerd))
+- chore: bump version to 0.1.7-alpha.1 [\#1159](https://github.com/okcashpro/okai/pull/1159) ([shakkernerd](https://github.com/shakkernerd))
 - fix: client twitter login and auth handler [\#1158](https://github.com/okcashpro/okai/pull/1158) ([shakkernerd](https://github.com/shakkernerd))
 
 ## [v0.1.6-alpha.3](https://github.com/okcashpro/okai/tree/v0.1.6-alpha.3) (2024-12-17)
