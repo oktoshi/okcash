@@ -1,4 +1,4 @@
-[@okcashpro/okai v0.1.5-alpha.5](../index.md) / getGoals
+[@okcashpro/okai v0.1.7-alpha.1](../index.md) / getGoals
 
 # Function: getGoals()
 

@@ -5,9 +5,9 @@
     "type": "module",
     "types": "dist/index.d.ts",
     "dependencies": {
+        "@okcashpro/okai": "workspace:*",
         "@lens-protocol/client": "2.2.0",
         "@lens-protocol/metadata": "1.2.0",
-        "@okcashpro/okai": "workspace:*",
         "axios": "^1.7.9",
         "viem": "^2.13.8"
     },

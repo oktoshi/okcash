@@ -1,4 +1,4 @@
-[@okcashpro/okai v0.1.5-alpha.5](../index.md) / IVideoService
+[@okcashpro/okai v0.1.7-alpha.1](../index.md) / IVideoService
 
 # Interface: IVideoService
 
@@ -24,7 +24,7 @@
 
 #### Defined in
 
-[packages/core/src/types.ts:1009](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1009)
+[packages/core/src/types.ts:1016](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1016)
 
 ## Methods
 
@@ -48,7 +48,7 @@ Add abstract initialize method that must be implemented by derived classes
 
 #### Defined in
 
-[packages/core/src/types.ts:1014](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1014)
+[packages/core/src/types.ts:1021](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1021)
 
 ***
 
@@ -66,7 +66,7 @@ Add abstract initialize method that must be implemented by derived classes
 
 #### Defined in
 
-[packages/core/src/types.ts:1122](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1122)
+[packages/core/src/types.ts:1129](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1129)
 
 ***
 
@@ -84,7 +84,7 @@ Add abstract initialize method that must be implemented by derived classes
 
 #### Defined in
 
-[packages/core/src/types.ts:1123](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1123)
+[packages/core/src/types.ts:1130](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1130)
 
 ***
 
@@ -102,7 +102,7 @@ Add abstract initialize method that must be implemented by derived classes
 
 #### Defined in
 
-[packages/core/src/types.ts:1124](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1124)
+[packages/core/src/types.ts:1131](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1131)
 
 ***
 
@@ -122,4 +122,4 @@ Add abstract initialize method that must be implemented by derived classes
 
 #### Defined in
 
-[packages/core/src/types.ts:1125](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1125)
+[packages/core/src/types.ts:1132](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1132)

@@ -1,4 +1,4 @@
-[@okcashpro/okai v0.1.5-alpha.5](../index.md) / getModel
+[@okcashpro/okai v0.1.7-alpha.1](../index.md) / getModel
 
 # Function: getModel()
 
@@ -16,4 +16,4 @@
 
 ## Defined in
 
-[packages/core/src/models.ts:471](https://github.com/okcashpro/okai/blob/main/packages/core/src/models.ts#L471)
+[packages/core/src/models.ts:491](https://github.com/okcashpro/okai/blob/main/packages/core/src/models.ts#L491)

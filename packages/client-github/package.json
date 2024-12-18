@@ -5,9 +5,9 @@
     "type": "module",
     "types": "dist/index.d.ts",
     "dependencies": {
+        "@okcashpro/okai": "workspace:*",
         "@octokit/rest": "20.1.1",
         "@octokit/types": "12.6.0",
-        "@okcashpro/okai": "workspace:*",
         "glob": "10.4.5",
         "simple-git": "3.27.0"
     },

@@ -1,4 +1,4 @@
-[@okcashpro/okai v0.1.5-alpha.5](../index.md) / ICacheManager
+[@okcashpro/okai v0.1.7-alpha.1](../index.md) / ICacheManager
 
 # Interface: ICacheManager
 
@@ -22,7 +22,7 @@
 
 #### Defined in
 
-[packages/core/src/types.ts:990](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L990)
+[packages/core/src/types.ts:997](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L997)
 
 ***
 
@@ -48,7 +48,7 @@
 
 #### Defined in
 
-[packages/core/src/types.ts:991](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L991)
+[packages/core/src/types.ts:998](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L998)
 
 ***
 
@@ -66,4 +66,4 @@
 
 #### Defined in
 
-[packages/core/src/types.ts:992](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L992)
+[packages/core/src/types.ts:999](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L999)

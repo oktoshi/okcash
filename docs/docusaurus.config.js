@@ -4,9 +4,9 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const config = {
-  title: "okai",
-  tagline: "Flexible, scalable AI agents for everyone",
-  favicon: "img/favicon.ico",
+  title: "OKAI",
+  tagline: "Your ultimate crypto companion. Smarter $OK, smarter world — AI agents designed for you.",
+  favicon: "img/favicon.png",
   url: "https://okcashpro.github.io",
   baseUrl: "/okai/",
   organizationName: "OK",
@@ -149,7 +149,7 @@ const config = {
       title: "okai",
       logo: {
         alt: "OKai Logo",
-        src: "img/favicon.ico",
+        src: "img/favicon.png",
       },
       items: [
         {
@@ -173,10 +173,15 @@ const config = {
           docId: "index",
         },
         {
-          href: "https://github.com/okcashpro/okai",
-          label: "GitHub",
-          position: "right",
+          href: "https://okcash.org",
+          label: "OK Multichain",
+          position: "left",
         },
+        {
+            href: "https://github.com/okcashpro/okai",
+            label: "GitHub",
+            position: "right",
+          },
       ],
     },
     footer: {
@@ -200,7 +205,7 @@ const config = {
             },
             {
               label: "Twitter",
-              href: "https://twitter.com/OKdao",
+              href: "https://twitter.com/okaihere",
             },
           ],
         },
@@ -214,7 +219,7 @@ const config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} OK`,
+      copyright: `Part of the OK Multichain and AI Revolution | Copyright © ${new Date().getFullYear()} okcash.org`,
     },
     prism: {
       theme: prismThemes.github,

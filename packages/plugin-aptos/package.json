@@ -5,8 +5,8 @@
     "type": "module",
     "types": "dist/index.d.ts",
     "dependencies": {
-        "@aptos-labs/ts-sdk": "^1.26.0",
         "@okcashpro/okai": "workspace:*",
+        "@aptos-labs/ts-sdk": "^1.26.0",
         "bignumber": "1.1.0",
         "bignumber.js": "9.1.2",
         "node-cache": "5.1.2",

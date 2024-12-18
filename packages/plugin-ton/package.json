@@ -7,11 +7,11 @@
     "dependencies": {
         "@okcashpro/okai": "workspace:*",
         "@okcashpro/plugin-trustdb": "workspace:*",
-        "@ton/crypto": "3.3.0",
-        "@ton/ton": "15.1.0",
         "bignumber": "1.1.0",
         "bignumber.js": "9.1.2",
         "node-cache": "5.1.2",
+        "@ton/ton": "15.1.0",
+        "@ton/crypto": "3.3.0",
         "tsup": "8.3.5"
     },
     "scripts": {

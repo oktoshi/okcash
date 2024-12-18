@@ -1,4 +1,4 @@
-[@okcashpro/okai v0.1.5-alpha.5](../index.md) / Provider
+[@okcashpro/okai v0.1.7-alpha.1](../index.md) / Provider
 
 # Interface: Provider
 
@@ -26,4 +26,4 @@ Data retrieval function
 
 #### Defined in
 
-[packages/core/src/types.ts:465](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L465)
+[packages/core/src/types.ts:467](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L467)

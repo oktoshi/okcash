@@ -1,4 +1,4 @@
-[@okcashpro/okai v0.1.5-alpha.5](../index.md) / IImageDescriptionService
+[@okcashpro/okai v0.1.7-alpha.1](../index.md) / IImageDescriptionService
 
 # Interface: IImageDescriptionService
 
@@ -24,7 +24,7 @@
 
 #### Defined in
 
-[packages/core/src/types.ts:1009](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1009)
+[packages/core/src/types.ts:1016](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1016)
 
 ## Methods
 
@@ -48,7 +48,7 @@ Add abstract initialize method that must be implemented by derived classes
 
 #### Defined in
 
-[packages/core/src/types.ts:1014](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1014)
+[packages/core/src/types.ts:1021](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1021)
 
 ***
 
@@ -74,4 +74,4 @@ Add abstract initialize method that must be implemented by derived classes
 
 #### Defined in
 
-[packages/core/src/types.ts:1107](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1107)
+[packages/core/src/types.ts:1114](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1114)

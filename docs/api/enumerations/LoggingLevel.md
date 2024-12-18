@@ -1,4 +1,4 @@
-[@okcashpro/okai v0.1.5-alpha.5](../index.md) / LoggingLevel
+[@okcashpro/okai v0.1.7-alpha.1](../index.md) / LoggingLevel
 
 # Enumeration: LoggingLevel
 
@@ -10,7 +10,7 @@
 
 #### Defined in
 
-[packages/core/src/types.ts:1213](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1213)
+[packages/core/src/types.ts:1220](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1220)
 
 ***
 
@@ -20,7 +20,7 @@
 
 #### Defined in
 
-[packages/core/src/types.ts:1214](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1214)
+[packages/core/src/types.ts:1221](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1221)
 
 ***
 
@@ -30,4 +30,4 @@
 
 #### Defined in
 
-[packages/core/src/types.ts:1215](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1215)
+[packages/core/src/types.ts:1222](https://github.com/okcashpro/okai/blob/main/packages/core/src/types.ts#L1222)
