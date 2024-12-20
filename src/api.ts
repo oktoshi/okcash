@@ -1,9 +1,15 @@
 import OpenAI from 'openai';
 import { config } from './config/env';
 import type { AIPersona } from './config/personas/types';
-import { calculateSimilarity, extractKeyTerms } from './utils/textMatching';
+import { calculateSimilarity } from './utils/textMatching';
 import { formatPersonaResponse } from './utils/personaFormatter';
 import { integrateKnowledge } from './utils/knowledgeIntegration';
+import { validateMessages } from './utils/validation';
+import { logger } from './utils/logger';
+import { analytics } from './utils/analytics';
+import { cache } from './utils/cache';
+import { metrics } from './utils/metrics';
+import { sanitizeInput, validateContentSecurity } from './utils/security';
 
 const DEFAULT_MODEL = "cognitivecomputations/dolphin-mixtral-8x22b";
 
@@ -35,10 +41,23 @@ function findBestMatch(message: string, persona: AIPersona) {
 
 export async function sendMessage(messages: { role: string; content: string }[], persona: AIPersona) {
   try {
+    // Validate messages
+    validateMessages(messages);
+
     const lastUserMessage = messages[messages.length - 1];
     if (lastUserMessage.role === 'user') {
+      // Sanitize and validate input
+      const sanitizedContent = sanitizeInput(lastUserMessage.content);
+      if (!validateContentSecurity(sanitizedContent)) {
+        throw new Error('Invalid content detected');
+      }
+
+      // Start performance monitoring
+      metrics.recordMetric('message_request', 1);
+      const requestStart = performance.now();
+
       const integrated = integrateKnowledge(persona);
-      const matchingQA = findBestMatch(lastUserMessage.content, persona);
+      const matchingQA = findBestMatch(sanitizedContent, persona);
       
       // Create system message with integrated knowledge
       const systemMessage = `${persona.systemPrompt}
@@ -55,7 +74,7 @@ RESPONSE GUIDELINES:
 
       const updatedMessages = [
         { role: 'system', content: systemMessage },
-        ...messages
+        ...messages.map(m => ({ ...m, content: sanitizeInput(m.content) }))
       ];
 
       if (matchingQA) {
@@ -86,10 +105,19 @@ INSTRUCTIONS:
         response.content = formatPersonaResponse(response.content || '', persona);
       }
 
+      // Record metrics and analytics
+      const requestDuration = performance.now() - requestStart;
+      metrics.recordMetric('message_response_time', requestDuration);
+      analytics.trackEvent('message_sent', {
+        persona: persona.name,
+        hasKnowledgeMatch: !!matchingQA,
+        duration: requestDuration
+      });
+
       return response;
     }
   } catch (error) {
-    console.error('Error calling API:', error);
+    logger.error('Error in sendMessage:', error);
     throw error;
   }
 }

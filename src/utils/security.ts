@@ -1,4 +1,7 @@
-import { createHash } from 'crypto';
+/**
+ * Security utilities for browser environment
+ * Uses Web Crypto API instead of Node.js crypto module
+ */
 
 // Input sanitization
 export function sanitizeInput(input: string): string {
@@ -8,7 +11,7 @@ export function sanitizeInput(input: string): string {
     .trim();
 }
 
-// Content security
+// Content security validation
 export function validateContentSecurity(content: string): boolean {
   const maxLength = 4000;
   const suspiciousPatterns = [
@@ -16,7 +19,9 @@ export function validateContentSecurity(content: string): boolean {
     /javascript:/i,
     /data:/i,
     /vbscript:/i,
-    /on\w+=/i
+    /on\w+=/i,
+    /eval\(/i,
+    /Function\(/i
   ];
 
   if (content.length > maxLength) {
@@ -26,12 +31,16 @@ export function validateContentSecurity(content: string): boolean {
   return !suspiciousPatterns.some(pattern => pattern.test(content));
 }
 
-// Hash sensitive data
-export function hashData(data: string): string {
-  return createHash('sha256').update(data).digest('hex');
+// Generate secure hash using Web Crypto API
+export async function generateHash(data: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const dataBuffer = encoder.encode(data);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// Token validation
+// Validate JWT format (without verification)
 export function validateToken(token: string): boolean {
   return /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/.test(token);
 }
@@ -43,4 +52,31 @@ export function safeJSONParse(str: string): unknown {
   } catch {
     return null;
   }
+}
+
+// Generate secure random string
+export function generateSecureId(length: number = 32): string {
+  const array = new Uint8Array(length);
+  crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+// Content type validation
+export function validateContentType(type: string): boolean {
+  const allowedTypes = [
+    'text/plain',
+    'application/json',
+    'text/markdown'
+  ];
+  return allowedTypes.includes(type);
+}
+
+// XSS prevention
+export function escapeHtml(unsafe: string): string {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
