@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint . --report-unused-disable-directives",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
     "preview": "vite preview",
     "release": "node scripts/release.js",
     "changelog": "node scripts/changelog.js",
@@ -39,6 +39,7 @@
     "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "globals": "^15.0.0",
     "jsdom": "^24.0.0",
     "postcss": "^8.4.35",
     "semver": "^7.6.0",
