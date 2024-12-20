@@ -5,6 +5,7 @@ export interface AIPersona {
   knowledgeBases?: string[]; // Array of knowledge base names to use
   customKnowledge?: string[]; // Additional custom knowledge topics
   displayOrder?: number;
+  model?: string; // Optional model override
 }
 
 export interface PersonaConfig {
