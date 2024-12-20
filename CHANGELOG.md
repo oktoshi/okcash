@@ -18,12 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release management documentation
 
 ### Changed
+- Project renamed to OKai-S
 - Improved message component with animation support
 - Enhanced chat scroll behavior with debouncing
 - Restructured App component for better organization
 - Updated styling with new animations and transitions
 - Optimized API response handling
 - Enhanced persona system with better character consistency
+- Updated all branding and references to reflect new name
 
 ### Fixed
 - Double message display issue

@@ -8,10 +8,10 @@ import { useKnowledgeReload } from './hooks/useKnowledgeReload';
 import { useChatScroll } from './hooks/useChatScroll';
 import { sendMessage } from './api';
 import { Github } from 'lucide-react';
-import type { Message } from './types';
 import { v4 as uuidv4 } from 'uuid';
+import type { Message } from './types';
 
-export function App() {
+export default function App() {
   useKnowledgeReload();
   
   const [messages, setMessages] = useState<Message[]>([]);
@@ -55,15 +55,11 @@ export function App() {
     }
   };
 
-  const handleAnimationComplete = useCallback(() => {
-    scrollToBottom('smooth');
-  }, [scrollToBottom]);
-
   return (
     <ChatFocusContext.Provider value={chatFocus}>
       <div className="flex flex-col h-full bg-gray-900">
         <header className="flex-none p-4 border-b border-gray-800">
-          <h1 className="text-xl font-bold text-white text-center">OKai Support</h1>
+          <h1 className="text-xl font-bold text-white text-center">OKai S</h1>
         </header>
         
         <div className="flex flex-1 overflow-hidden">
@@ -75,14 +71,13 @@ export function App() {
                 </div>
               ) : (
                 <div className="space-y-4 py-4">
-                  {messages.map((message, index) => (
+                  {messages.map((message) => (
                     <ChatMessage 
                       key={message.id}
                       message={message}
-                      isTyping={isLoading && index === messages.length - 1}
-                      shouldAnimate={index === messages.length - 1 && message.role === 'assistant'}
+                      isTyping={isLoading && message === messages[messages.length - 1]}
+                      shouldAnimate={message.role === 'assistant'}
                       onContentUpdate={handleContentUpdate}
-                      onAnimationComplete={handleAnimationComplete}
                     />
                   ))}
                   <div ref={messagesEndRef} />
@@ -103,13 +98,13 @@ export function App() {
             <ChatInput onSend={handleSendMessage} disabled={isLoading} />
             <div className="px-4 pb-2 flex justify-between items-center text-xs text-gray-500">
               <span>
-                <a href="https://okai.github.io" className="hover:text-blue-400 transition-colors">OKai Support</a>
+                <a href="https://okai-s.github.io" className="hover:text-blue-400 transition-colors">OKai-S</a>
                 {' '}by{' '}
                 <a href="https://okcash.org" className="hover:text-blue-400 transition-colors">OK</a>
                 {' '}© 2025
               </span>
               <a
-                href="https://github.com/ok-devs/okai-support"
+                href="https://github.com/ok-devs/okai-s"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors text-xs mr-5"
@@ -124,5 +119,3 @@ export function App() {
     </ChatFocusContext.Provider>
   );
 }
-
-export default App;
