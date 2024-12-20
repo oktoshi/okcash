@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+@layer base {
+  html, body {
+    @apply h-full bg-gray-900 text-white;
+  }
+  
+  #root {
+    @apply h-full;
+  }
+}
