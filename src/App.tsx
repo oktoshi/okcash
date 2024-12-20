@@ -5,17 +5,21 @@ import { PersonaSidebar } from './components/PersonaSidebar';
 import { usePersona } from './hooks/usePersona';
 import { useChatFocusProvider, ChatFocusContext } from './hooks/useChatFocus';
 import { useKnowledgeReload } from './hooks/useKnowledgeReload';
+import { useChatScroll } from './hooks/useChatScroll';
 import { sendMessage } from './api';
 import { Github } from 'lucide-react';
 import type { Message } from './types';
+import { v4 as uuidv4 } from 'uuid';
 
-export default function App() {
+export function App() {
   useKnowledgeReload();
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { currentPersona, changePersona, availablePersonas } = usePersona();
   const chatFocus = useChatFocusProvider();
+  const { scrollContainerRef, messagesEndRef, handleContentUpdate, scrollToBottom } = 
+    useChatScroll({ messages, isTyping: isLoading });
 
   const handlePersonaChange = useCallback((personaKey: string) => {
     changePersona(personaKey);
@@ -24,7 +28,7 @@ export default function App() {
   }, [changePersona, chatFocus]);
 
   const handleSendMessage = async (content: string) => {
-    const userMessage: Message = { role: 'user', content };
+    const userMessage: Message = { id: uuidv4(), role: 'user', content };
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
@@ -34,6 +38,7 @@ export default function App() {
       
       if (response) {
         setMessages(prev => [...prev, {
+          id: uuidv4(),
           role: 'assistant',
           content: response.content || 'Sorry, I could not generate a response.'
         }]);
@@ -41,6 +46,7 @@ export default function App() {
     } catch (error) {
       console.error('Error:', error);
       setMessages(prev => [...prev, {
+        id: uuidv4(),
         role: 'assistant',
         content: 'Sorry, there was an error processing your request.'
       }]);
@@ -49,15 +55,19 @@ export default function App() {
     }
   };
 
+  const handleAnimationComplete = useCallback(() => {
+    scrollToBottom('smooth');
+  }, [scrollToBottom]);
+
   return (
     <ChatFocusContext.Provider value={chatFocus}>
       <div className="flex flex-col h-full bg-gray-900">
         <header className="flex-none p-4 border-b border-gray-800">
-          <h1 className="text-xl font-bold text-white text-center">OK Support by OKai Agents</h1>
+          <h1 className="text-xl font-bold text-white text-center">OKai Support</h1>
         </header>
         
         <div className="flex flex-1 overflow-hidden">
-          <main className="flex-1 overflow-y-auto">
+          <main className="flex-1 overflow-y-auto" ref={scrollContainerRef}>
             <div className="max-w-4xl mx-auto">
               {messages.length === 0 ? (
                 <div className="h-full flex items-center justify-center text-gray-400 min-h-[200px]">
@@ -66,8 +76,16 @@ export default function App() {
               ) : (
                 <div className="space-y-4 py-4">
                   {messages.map((message, index) => (
-                    <ChatMessage key={index} message={message} />
+                    <ChatMessage 
+                      key={message.id}
+                      message={message}
+                      isTyping={isLoading && index === messages.length - 1}
+                      shouldAnimate={index === messages.length - 1 && message.role === 'assistant'}
+                      onContentUpdate={handleContentUpdate}
+                      onAnimationComplete={handleAnimationComplete}
+                    />
                   ))}
+                  <div ref={messagesEndRef} />
                 </div>
               )}
             </div>
@@ -85,13 +103,13 @@ export default function App() {
             <ChatInput onSend={handleSendMessage} disabled={isLoading} />
             <div className="px-4 pb-2 flex justify-between items-center text-xs text-gray-500">
               <span>
-                <a href="https://okai.github.io" className="hover:text-blue-400 transition-colors">OKai Support AI</a>
-                {' '}Agents by{' '}
+                <a href="https://okai.github.io" className="hover:text-blue-400 transition-colors">OKai Support</a>
+                {' '}by{' '}
                 <a href="https://okcash.org" className="hover:text-blue-400 transition-colors">OK</a>
                 {' '}© 2025
               </span>
               <a
-                href="https://github.com/ok-devs/okai-chatsupport"
+                href="https://github.com/ok-devs/okai-support"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors text-xs mr-5"
@@ -106,3 +124,5 @@ export default function App() {
     </ChatFocusContext.Provider>
   );
 }
+
+export default App;

@@ -1,23 +1,59 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, Bot } from 'lucide-react';
 import { marked } from 'marked';
 import type { Message } from '../types';
 
 interface ChatMessageProps {
   message: Message;
+  isTyping?: boolean;
+  shouldAnimate?: boolean;
+  onContentUpdate?: () => void;
+  onAnimationComplete?: () => void;
 }
 
-// Configure marked to only allow specific tags for safety
-marked.setOptions({
-  headerIds: false,
-  mangle: false
-});
-
-export function ChatMessage({ message }: ChatMessageProps) {
+export function ChatMessage({ 
+  message, 
+  isTyping = false, 
+  shouldAnimate = false,
+  onContentUpdate,
+  onAnimationComplete 
+}: ChatMessageProps) {
   const isUser = message.role === 'user';
+  const [displayedContent, setDisplayedContent] = useState('');
+  const [isAnimating, setIsAnimating] = useState(false);
   
-  // Parse markdown to HTML
-  const htmlContent = marked(message.content, { breaks: true });
+  useEffect(() => {
+    if (isUser || !shouldAnimate) {
+      setDisplayedContent(message.content);
+      return;
+    }
+
+    setIsAnimating(true);
+    const words = message.content.split(/(\s+)/);
+    let currentText = '';
+    let currentIndex = 0;
+
+    const typeNextWord = () => {
+      if (currentIndex < words.length) {
+        currentText += words[currentIndex];
+        setDisplayedContent(currentText);
+        onContentUpdate?.();
+        currentIndex++;
+        requestAnimationFrame(typeNextWord);
+      } else {
+        setIsAnimating(false);
+        onAnimationComplete?.();
+      }
+    };
+
+    requestAnimationFrame(typeNextWord);
+
+    return () => {
+      setIsAnimating(false);
+    };
+  }, [isUser, message.content, shouldAnimate, onContentUpdate, onAnimationComplete]);
+
+  const htmlContent = marked(displayedContent, { breaks: true });
   
   return (
     <div className={`p-4 ${isUser ? 'bg-gray-800' : 'bg-gray-900'}`}>
@@ -34,6 +70,13 @@ export function ChatMessage({ message }: ChatMessageProps) {
             className="text-gray-100 prose prose-invert max-w-none"
             dangerouslySetInnerHTML={{ __html: htmlContent }}
           />
+          {(isAnimating || isTyping) && (
+            <div className="typing-indicator">
+              <span className="dot"></span>
+              <span className="dot"></span>
+              <span className="dot"></span>
+            </div>
+          )}
         </div>
       </div>
     </div>

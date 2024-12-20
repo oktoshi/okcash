@@ -3,6 +3,7 @@ import { config } from './config/env';
 import type { AIPersona } from './config/personas/types';
 import { knowledgeBases } from './config/knowledge';
 import { calculateSimilarity, extractKeyTerms } from './utils/textMatching';
+import { formatPersonaResponse } from './utils/personaFormatter';
 
 const openai = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
@@ -62,43 +63,35 @@ export async function sendMessage(messages: { role: string; content: string }[],
     if (lastUserMessage.role === 'user') {
       const matchingQA = findMatchingQA(lastUserMessage.content, persona);
       
-      // Create base system message that establishes knowledge hierarchy
+      // Create base system message that establishes persona and knowledge hierarchy
       const baseSystemMessage = `${persona.systemPrompt}
 
-CRITICAL KNOWLEDGE BASE INSTRUCTIONS:
-1. You are an expert in ${persona.knowledgeBases?.map(kb => knowledgeBases[kb].name).join(', ')}.
-2. Your knowledge comes from TWO sources, in strict priority order:
-   a. PRIMARY SOURCE (Highest Authority): Our verified knowledge base
-   b. SECONDARY SOURCE (Fallback Only): Your general knowledge
+CRITICAL RESPONSE GUIDELINES:
+1. ALWAYS maintain character as defined in the system prompt
+2. NEVER break character or reference being an AI
+3. NEVER apologize for or reference previous responses
+4. NEVER mention knowledge bases or programming
+5. Respond naturally in character, even when clarifying or changing topics
 
-3. When responding:
-   - If a verified knowledge base answer exists, you MUST ONLY use that answer
-   - NEVER mix knowledge base answers with your general knowledge
-   - If no knowledge base answer exists, then use your general knowledge
-   
-4. The knowledge base is ALWAYS:
-   - More recent and up-to-date than your general knowledge
-   - More accurate and reliable than your general knowledge
-   - The absolute source of truth for its topics
+KNOWLEDGE HIERARCHY:
+1. PRIMARY: Verified knowledge base answers
+2. SECONDARY: General knowledge within character
 
-5. You are FORBIDDEN from:
-   - Questioning or doubting knowledge base answers
-   - Mixing knowledge base answers with general knowledge
-   - Adding disclaimers to knowledge base answers
-   - Suggesting alternatives to knowledge base answers`;
+When no knowledge base match exists:
+- Stay in character while asking for clarification
+- Guide the conversation naturally
+- Keep responses aligned with persona's style and expertise`;
       
       if (matchingQA) {
-        const knowledgeBaseMessage = `VERIFIED KNOWLEDGE BASE ANSWER FOR "${lastUserMessage.content}":
-          
-[Category: ${matchingQA.category}]
-"${matchingQA.answer}"
+        const knowledgeBaseMessage = `VERIFIED ANSWER CONTEXT:
+Category: ${matchingQA.category}
+Answer: "${matchingQA.answer}"
 
-RESPONSE INSTRUCTIONS:
-1. Use ONLY this verified answer
-2. Present it confidently in your persona's style
-3. Do NOT add any information from your general knowledge
-4. Do NOT question or qualify the answer
-5. Treat this answer as normal and expected`;
+RESPONSE REQUIREMENTS:
+1. Incorporate this information naturally in character
+2. Never reference it being from a knowledge base
+3. Maintain persona's unique style and personality
+4. Present information confidently as your own knowledge`;
         
         messages = [
           { role: 'system', content: baseSystemMessage },
@@ -118,7 +111,13 @@ RESPONSE INSTRUCTIONS:
       messages
     });
     
-    return completion.choices[0].message;
+    // Format response to ensure persona consistency
+    const response = completion.choices[0].message;
+    if (response) {
+      response.content = formatPersonaResponse(response.content || '', persona);
+    }
+    
+    return response;
   } catch (error) {
     console.error('Error calling API:', error);
     throw error;
