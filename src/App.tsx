@@ -3,12 +3,15 @@ import { ChatMessage } from './components/ChatMessage';
 import { ChatInput } from './components/ChatInput';
 import { PersonaSidebar } from './components/PersonaSidebar';
 import { usePersona } from './hooks/usePersona';
-import { ChatFocusContext, useChatFocusProvider } from './hooks/useChatFocus';
+import { useChatFocusProvider, ChatFocusContext } from './hooks/useChatFocus';
+import { useKnowledgeReload } from './hooks/useKnowledgeReload';
 import { sendMessage } from './api';
 import { Github } from 'lucide-react';
 import type { Message } from './types';
 
 export default function App() {
+  useKnowledgeReload();
+  
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { currentPersona, changePersona, availablePersonas } = usePersona();

@@ -70,10 +70,11 @@ npm run dev
 
 Be part of the Web3 and AI revolution with OK! Connect with us:
 
-- 🌐 [OK Website](https://okcash.co)
+- 🌐 [OKai Website](https://okai.github.io/okai/)
+- 🌐 [OK Website](https://okcash.org)
 - 💬 [Discord](https://discord.gg/grvpc8c)
-- 🐦 [Twitter](https://twitter.com/okcashcrypto)
-- 📱 [Telegram](https://t.me/okcash)
+- 🐦 [Twitter](https://twitter.com/oktokencash)
+- 📱 [Telegram](https://t.me/ok_heroes)
 
 ## License
 
