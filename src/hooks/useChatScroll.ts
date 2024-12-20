@@ -2,11 +2,11 @@ import { useEffect, useRef, useCallback } from 'react';
 import { debounce } from '../utils/debounce';
 
 interface UseChatScrollProps {
-  messages: any[];
+  messages: Array<unknown>;
   isTyping: boolean;
 }
 
-export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
+export function useChatScroll({ messages }: UseChatScrollProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isNearBottomRef = useRef(true);
@@ -28,7 +28,7 @@ export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
   );
 
   // Progressive scroll that follows typing
-  const scrollToBottom = useCallback((behavior: ScrollBehavior = 'smooth') => {
+  const scrollToBottom = useCallback((behavior: 'smooth' | 'auto' = 'smooth') => {
     if (scrollContainerRef.current && messagesEndRef.current && isNearBottomRef.current) {
       messagesEndRef.current.scrollIntoView({
         behavior,
@@ -57,7 +57,7 @@ export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
   useEffect(() => {
     if (messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
-      if (lastMessage.role === 'user') {
+      if (lastMessage && 'role' in lastMessage && lastMessage.role === 'user') {
         // Always scroll to bottom for user messages
         isNearBottomRef.current = true;
         scrollToBottom('auto');

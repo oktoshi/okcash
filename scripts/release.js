@@ -27,7 +27,7 @@ function updateVersion(type) {
   return newVersion;
 }
 
-function generateChangelog(version) {
+function generateChangelog() {
   execSync(`npm run changelog -- --release-count 1`, { stdio: 'inherit' });
 }
 
@@ -45,32 +45,26 @@ function main() {
   const type = process.argv[2];
   
   if (!TYPES[type]) {
-    console.error(`Invalid release type. Use: ${Object.keys(TYPES).join(', ')}`);
-    process.exit(1);
+    throw new Error(`Invalid release type. Use: ${Object.keys(TYPES).join(', ')}`);
   }
   
   try {
-    console.log('Building project...');
     buildProject();
-    
-    console.log('Updating version...');
     const newVersion = updateVersion(type);
-    
-    console.log('Generating changelog...');
-    generateChangelog(newVersion);
-    
-    console.log('Creating git tag...');
+    generateChangelog();
     createGitTag(newVersion);
     
-    console.log(`\nSuccessfully released version ${newVersion}`);
-    console.log('\nNext steps:');
-    console.log('1. Push changes: git push origin main');
-    console.log(`2. Push tag: git push origin v${newVersion}`);
-    console.log('3. Create GitHub release with the generated changelog');
+    // Use console.info for important user messages
+    console.info('\nRelease completed successfully!');
+    console.info(`\nVersion: v${newVersion}`);
+    console.info('\nNext steps:');
+    console.info('1. Push changes: git push origin main');
+    console.info(`2. Push tag: git push origin v${newVersion}`);
+    console.info('3. Create GitHub release with the generated changelog');
     
   } catch (error) {
     console.error('Release failed:', error);
-    process.exit(1);
+    throw error;
   }
 }
 

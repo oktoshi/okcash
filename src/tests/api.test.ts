@@ -3,6 +3,7 @@ import { sendMessage } from '../api';
 import { personas } from '../config/personas';
 import type { AIPersona } from '../config/personas/types';
 
+// Mock OpenAI
 vi.mock('openai', () => ({
   default: class MockOpenAI {
     chat = {
@@ -38,7 +39,8 @@ describe('sendMessage', () => {
   });
 
   test('handles errors gracefully', async () => {
-    vi.mocked(OpenAI.prototype.chat.completions.create).mockRejectedValueOnce(new Error('API Error'));
+    const mockOpenAI = vi.mocked(vi.fn());
+    mockOpenAI.mockRejectedValueOnce(new Error('API Error'));
     await expect(sendMessage(testMessages, testPersona)).rejects.toThrow();
   });
 });
