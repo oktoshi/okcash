@@ -38,7 +38,7 @@ export function usePersona() {
   const sortedPersonaKeys = useMemo(() => {
     return Object.entries(personas)
       .filter(([key]) => key !== 'default')
-      .sort(([keyA, a], [keyB, b]) => {
+      .sort(([, a], [, b]) => {
         if (a.displayOrder !== undefined && b.displayOrder !== undefined) {
           return a.displayOrder - b.displayOrder;
         }

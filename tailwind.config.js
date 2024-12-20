@@ -5,7 +5,7 @@ export default {
     extend: {},
   },
   plugins: [
-    // eslint-disable-next-line no-undef
+    // @ts-expect-error - tailwindcss plugin types
     require('@tailwindcss/typography'),
   ],
 };

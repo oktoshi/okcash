@@ -1,40 +1,38 @@
 import { TextMatchingConfig } from './textMatching';
 
+interface Pattern {
+  pattern: RegExp;
+  weight: number;
+}
+
+interface TermWeight {
+  [term: string]: number;
+}
+
 // Helper function to register patterns for a knowledge base category
 export function registerKnowledgePatterns(
   category: string,
-  patterns: { pattern: RegExp; weight: number; }[],
-  termWeights: { [term: string]: number }
+  patterns: Pattern[],
+  termWeights: TermWeight
 ) {
   const config = TextMatchingConfig.getInstance();
   config.addCategory(category, patterns, termWeights);
 }
 
 // Helper to extract key terms from a knowledge base
-export function extractKnowledgeTerms(kb: any): string[] {
+export function extractKnowledgeTerms(kb: Record<string, unknown>): string[] {
   const terms = new Set<string>();
   
   // Extract terms from topics
-  if (kb.topics) {
-    Object.values(kb.topics).forEach((topicList: any) => {
+  if (kb.topics && typeof kb.topics === 'object') {
+    Object.values(kb.topics).forEach((topicList) => {
       if (Array.isArray(topicList)) {
         topicList.forEach(topic => {
-          topic.toLowerCase().split(/\W+/).forEach(term => {
-            if (term.length > 2) terms.add(term);
-          });
-        });
-      }
-    });
-  }
-  
-  // Extract terms from Q&As
-  if (kb.sampleQA) {
-    Object.values(kb.sampleQA).forEach((qaList: any) => {
-      if (Array.isArray(qaList)) {
-        qaList.forEach(qa => {
-          qa.question.toLowerCase().split(/\W+/).forEach(term => {
-            if (term.length > 2) terms.add(term);
-          });
+          if (typeof topic === 'string') {
+            topic.toLowerCase().split(/\W+/).forEach(term => {
+              if (term.length > 2) terms.add(term);
+            });
+          }
         });
       }
     });
