@@ -6,6 +6,7 @@ import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
 
 export default [
+  js.configs.recommended,
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
     ignores: ['dist/**', 'node_modules/**'],
@@ -14,9 +15,7 @@ export default [
       sourceType: 'module',
       parser: tsparser,
       parserOptions: {
-        ecmaFeatures: {
-          jsx: true
-        }
+        ecmaFeatures: { jsx: true }
       },
       globals: {
         ...globals.browser,
@@ -29,7 +28,6 @@ export default [
       'react-refresh': reactRefresh
     },
     rules: {
-      ...js.configs.recommended.rules,
       ...tseslint.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': [
