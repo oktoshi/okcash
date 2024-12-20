@@ -24,6 +24,10 @@ export default [
         JSX: 'readonly'
       }
     },
+    linterOptions: {
+      reportUnusedDisableDirectives: true,
+      noInlineConfig: true
+    },
     plugins: {
       '@typescript-eslint': tseslint,
       'react': reactPlugin,
