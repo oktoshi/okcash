@@ -5,10 +5,7 @@ import App from '../App';
 import { sendMessage } from '../api';
 
 // Mock dependencies
-vi.mock('../api', () => ({
-  sendMessage: vi.fn()
-}));
-
+vi.mock('../api');
 vi.mock('../utils/logger');
 vi.mock('../utils/metrics');
 vi.mock('../utils/analytics');
@@ -16,6 +13,11 @@ vi.mock('../utils/analytics');
 describe('App', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(sendMessage).mockResolvedValue({
+      id: '1',
+      role: 'assistant',
+      content: 'Test response'
+    });
   });
 
   test('renders chat interface', () => {
@@ -24,29 +26,31 @@ describe('App', () => {
   });
 
   test('sends message and displays response', async () => {
-    vi.mocked(sendMessage).mockResolvedValue({
-      id: '1',
-      role: 'assistant',
-      content: 'Test response'
-    });
-
     const user = userEvent.setup();
     render(<App />);
     
     const input = screen.getByPlaceholderText(/Type your message/);
-    const button = screen.getByRole('button', { name: /send/i });
-
     await user.type(input, 'Hello');
-    await user.click(button);
+    await user.keyboard('{Enter}');
 
     await waitFor(() => {
       expect(screen.getByText('Hello')).toBeInTheDocument();
       expect(screen.getByText('Test response')).toBeInTheDocument();
     });
+
+    expect(sendMessage).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          role: 'user',
+          content: 'Hello'
+        })
+      ]),
+      expect.any(Object)
+    );
   });
 
   test('handles loading state', async () => {
-    vi.mocked(sendMessage).mockImplementation(() => 
+    vi.mocked(sendMessage).mockImplementationOnce(() => 
       new Promise(resolve => setTimeout(() => resolve({
         id: '1',
         role: 'assistant',
@@ -58,15 +62,23 @@ describe('App', () => {
     render(<App />);
     
     const input = screen.getByPlaceholderText(/Type your message/);
-    const button = screen.getByRole('button', { name: /send/i });
-
     await user.type(input, 'Hello');
-    await user.click(button);
+    await user.keyboard('{Enter}');
 
-    expect(button).toBeDisabled();
+    expect(screen.getByRole('button')).toBeDisabled();
     
     await waitFor(() => {
-      expect(button).not.toBeDisabled();
+      expect(screen.getByRole('button')).not.toBeDisabled();
     });
+  });
+
+  test('changes persona', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    
+    const personaButton = screen.getByText('Elon Musk');
+    await user.click(personaButton);
+    
+    expect(screen.getByText(/Start a conversation with Elon Musk/)).toBeInTheDocument();
   });
 });

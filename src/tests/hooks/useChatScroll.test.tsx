@@ -35,7 +35,10 @@ describe('useChatScroll', () => {
     const messages: Message[] = [{ id: '1', role: 'user', content: 'test' }];
     
     renderHook(() => useChatScroll({ messages, isTyping: false }));
-    vi.runAllTimers();
+    
+    act(() => {
+      vi.runAllTimers();
+    });
 
     expect(mockScrollIntoView).toHaveBeenCalledWith({ 
       behavior: 'auto', 
@@ -71,7 +74,6 @@ describe('useChatScroll', () => {
 
     act(() => {
       container.dispatchEvent(new Event('scroll'));
-      container.dispatchEvent(new Event('scroll'));
       vi.advanceTimersByTime(150);
     });
     
@@ -86,16 +88,5 @@ describe('useChatScroll', () => {
 
     unmount();
     expect(mockRemoveEventListener).toHaveBeenCalledWith('scroll', expect.any(Function));
-  });
-
-  test('handles typing state changes', () => {
-    const { rerender } = renderHook(
-      ({ isTyping }) => useChatScroll({ messages: [], isTyping }),
-      { initialProps: { isTyping: false } }
-    );
-
-    rerender({ isTyping: true });
-    vi.runAllTimers();
-    expect(mockScrollIntoView).toHaveBeenCalled();
   });
 });

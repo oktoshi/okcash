@@ -37,9 +37,7 @@ describe('ChatInput', () => {
     const user = userEvent.setup();
     renderWithContext();
     
-    const input = screen.getByPlaceholderText(/Type your message/);
     await user.keyboard('{Enter}');
-
     expect(mockOnSend).not.toHaveBeenCalled();
   });
 
