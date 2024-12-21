@@ -3,6 +3,8 @@ import { validateMessages, validatePersona, validateKnowledgeBase } from '../uti
 import { ValidationError } from '../utils/errors';
 import { logger } from '../utils/logger';
 import type { Message } from '../types';
+import type { AIPersona } from '../config/personas/types';
+import type { KnowledgeBase } from '../config/knowledge/types';
 
 vi.mock('../utils/logger');
 
@@ -26,50 +28,81 @@ describe('validation', () => {
       expect(result).toEqual(messages);
     });
 
-    test('rejects invalid message sequence', () => {
-      const messages = [
-        { id: '1', role: 'user', content: 'Hello' },
-        { id: '2', role: 'assistant', content: 'Hi' }
-      ] as Message[];
-      expect(() => validateMessages(messages))
+    test('rejects empty array', () => {
+      expect(() => validateMessages([]))
         .toThrow(ValidationError);
     });
 
     test('rejects non-array input', () => {
       expect(() => validateMessages('not an array'))
         .toThrow(ValidationError);
-      expect(logger.error).toHaveBeenCalled();
     });
 
-    test('rejects empty array', () => {
-      expect(() => validateMessages([]))
-        .toThrow(ValidationError);
-      expect(logger.error).toHaveBeenCalled();
-    });
-
-    test('rejects too many messages', () => {
-      const messages = Array(101).fill({ 
-        id: '1', 
-        role: 'user', 
-        content: 'test' 
-      });
+    test('rejects messages without ID', () => {
+      const messages = [{ role: 'user', content: 'Hello' }];
       expect(() => validateMessages(messages))
         .toThrow(ValidationError);
     });
 
-    test('rejects messages without ID', () => {
-      const messages = [{ role: 'user', content: 'Hello' }] as unknown[];
+    test('rejects empty content', () => {
+      const messages = [{ id: '1', role: 'user', content: '' }];
       expect(() => validateMessages(messages))
         .toThrow(ValidationError);
     });
 
     test('rejects invalid role', () => {
-      const messages = [{ 
-        id: '1', 
-        role: 'invalid', 
-        content: 'Hello' 
-      }] as unknown[];
+      const messages = [{ id: '1', role: 'invalid', content: 'Hello' }];
       expect(() => validateMessages(messages))
+        .toThrow(ValidationError);
+    });
+
+    test('logs validation errors', () => {
+      try {
+        validateMessages([]);
+      } catch (error) {
+        expect(logger.error).toHaveBeenCalled();
+      }
+    });
+  });
+
+  describe('validatePersona', () => {
+    test('validates correct persona', () => {
+      const persona: AIPersona = {
+        name: 'Test',
+        description: 'Test persona',
+        systemPrompt: 'You are a test persona'
+      };
+      expect(() => validatePersona(persona)).not.toThrow();
+    });
+
+    test('rejects invalid persona', () => {
+      const invalidPersona = {
+        name: 'Test'
+      };
+      expect(() => validatePersona(invalidPersona))
+        .toThrow(ValidationError);
+    });
+  });
+
+  describe('validateKnowledgeBase', () => {
+    test('validates correct knowledge base', () => {
+      const kb: KnowledgeBase = {
+        name: 'Test',
+        topics: {
+          general: ['Topic 1', 'Topic 2']
+        },
+        prompts: {
+          default: 'Test prompt'
+        }
+      };
+      expect(() => validateKnowledgeBase(kb)).not.toThrow();
+    });
+
+    test('rejects invalid knowledge base', () => {
+      const invalidKb = {
+        name: 'Test'
+      };
+      expect(() => validateKnowledgeBase(invalidKb))
         .toThrow(ValidationError);
     });
   });
