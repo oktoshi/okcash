@@ -5,7 +5,10 @@ import App from '../App';
 import { sendMessage } from '../api';
 
 // Mock dependencies
-vi.mock('../api');
+vi.mock('../api', () => ({
+  sendMessage: vi.fn()
+}));
+
 vi.mock('../utils/logger');
 vi.mock('../utils/metrics');
 vi.mock('../utils/analytics');

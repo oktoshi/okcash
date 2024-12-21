@@ -48,11 +48,8 @@ export function processMessages(messages: Message[]): Message[] {
       throw new ValidationError('Too many messages (maximum 100)');
     }
 
-    // Validate entire array first
-    const validatedMessages = validateMessages(messages);
-
-    // Then process each message
-    return validatedMessages.map(msg => processMessage(msg));
+    // Process each message individually
+    return messages.map(msg => processMessage(msg));
   } catch (error) {
     logger.error('Error processing messages:', { error, messages });
     throw error instanceof ValidationError ? error : new ValidationError('Messages processing failed');

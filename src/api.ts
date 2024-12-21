@@ -5,11 +5,11 @@ import type { AIPersona } from './config/personas/types';
 import { processMessages } from './utils/messageProcessor';
 import { formatResponse } from './utils/responseFormatter';
 import { findBestMatch, integrateKnowledge } from './utils/knowledgeIntegration';
-import { validateMessages } from './utils/validation';
 import { logger } from './utils/logger';
 import { analytics } from './utils/analytics';
 import { metrics } from './utils/metrics';
 import { RateLimiter } from './utils/rateLimit';
+import { ValidationError } from './utils/errors';
 
 const DEFAULT_MODEL = "cognitivecomputations/dolphin-mixtral-8x22b";
 const rateLimiter = RateLimiter.getInstance();
@@ -34,16 +34,25 @@ export async function sendMessage(messages: Message[], persona: AIPersona): Prom
       throw new Error('Rate limit exceeded');
     }
 
-    validateMessages(messages);
+    // Process and validate all messages
     const processedMessages = processMessages(messages);
-    
+    if (processedMessages.length === 0) {
+      throw new ValidationError('No valid messages to process');
+    }
+
+    const lastMessage = processedMessages[processedMessages.length - 1];
+    if (lastMessage.role !== 'user') {
+      throw new ValidationError('Last message must be from user');
+    }
+
     // Get knowledge context
     const integrated = await integrateKnowledge(persona);
-    const matchingQA = await findBestMatch(processedMessages[processedMessages.length - 1].content, persona);
+    const matchingQA = await findBestMatch(lastMessage.content, persona);
 
     // Create system message with integrated knowledge
-    const systemMessage = {
-      role: 'system' as const,
+    const systemMessage: Message = {
+      id: crypto.randomUUID(),
+      role: 'system',
       content: `${persona.systemPrompt}
 
 KNOWLEDGE BASE INTEGRATION:
@@ -64,11 +73,16 @@ RESPONSE GUIDELINES:
 
     const completion = await openai.chat.completions.create({
       model: persona.model || DEFAULT_MODEL,
-      messages: [systemMessage, ...processedMessages.map(m => ({ role: m.role, content: m.content }))]
+      messages: [systemMessage, ...processedMessages].map(m => ({
+        role: m.role,
+        content: m.content
+      }))
     });
 
     const response = completion.choices[0].message;
-    if (!response?.content) return undefined;
+    if (!response?.content) {
+      throw new Error('No response content received');
+    }
 
     const formattedResponse = formatResponse(
       { id: crypto.randomUUID(), role: 'assistant', content: response.content },
