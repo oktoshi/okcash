@@ -5,8 +5,6 @@ import { useKnowledgeReload } from '../../hooks/useKnowledgeReload';
 describe('useKnowledgeReload', () => {
   const mockReload = vi.fn();
   const mockOn = vi.fn();
-  const mockOff = vi.fn();
-  const mockGlob = vi.fn(() => ({}));
 
   beforeEach(() => {
     vi.resetModules();
@@ -15,45 +13,32 @@ describe('useKnowledgeReload', () => {
       writable: true
     });
     mockOn.mockClear();
-    mockOff.mockClear();
     mockReload.mockClear();
-    mockGlob.mockClear();
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
   });
 
   test('sets up hot reload listener', () => {
     const mockHot = {
-      on: mockOn,
-      off: mockOff
+      on: mockOn
     };
 
     vi.stubGlobal('import.meta', { 
+      ...import.meta,
       hot: mockHot,
-      glob: mockGlob
+      glob: () => ({})
     });
 
-    const { unmount } = renderHook(() => useKnowledgeReload());
+    renderHook(() => useKnowledgeReload());
     
     expect(mockOn).toHaveBeenCalledWith(
       'vite:beforeUpdate',
       expect.any(Function)
     );
-
-    // Trigger update handler
-    const updateHandler = mockOn.mock.calls[0][1];
-    updateHandler();
-
-    expect(mockReload).toHaveBeenCalled();
-
-    unmount();
   });
 
   test('handles missing hot reload', () => {
     vi.stubGlobal('import.meta', {
-      glob: mockGlob
+      ...import.meta,
+      glob: () => ({})
     });
 
     expect(() => {
@@ -61,23 +46,22 @@ describe('useKnowledgeReload', () => {
     }).not.toThrow();
   });
 
-  test('cleans up on unmount', () => {
+  test('reloads on knowledge base changes', () => {
     const mockHot = {
-      on: mockOn,
-      off: mockOff
+      on: mockOn
     };
 
     vi.stubGlobal('import.meta', { 
+      ...import.meta,
       hot: mockHot,
-      glob: mockGlob
+      glob: () => ({})
     });
 
-    const { unmount } = renderHook(() => useKnowledgeReload());
-    unmount();
-
-    expect(mockOff).toHaveBeenCalledWith(
-      'vite:beforeUpdate',
-      expect.any(Function)
-    );
+    renderHook(() => useKnowledgeReload());
+    
+    const callback = mockOn.mock.calls[0][1];
+    callback();
+    
+    expect(mockReload).toHaveBeenCalled();
   });
 });

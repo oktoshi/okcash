@@ -25,30 +25,26 @@ export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
     checkIfNearBottom();
   }, [checkIfNearBottom]);
 
-  const scrollToBottom = useCallback((behavior: 'smooth' | 'auto' = 'smooth') => {
-    if (!scrollContainerRef.current || !messagesEndRef.current || !isNearBottomRef.current) {
-      return;
-    }
+  const debouncedScroll = useCallback(
+    debounce(handleScroll, 100),
+    [handleScroll]
+  );
+
+  const scrollToBottom = useCallback((behavior: 'auto' | 'smooth' = 'smooth') => {
     requestAnimationFrame(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior, block: 'end' });
+      if (scrollContainerRef.current && messagesEndRef.current && isNearBottomRef.current) {
+        messagesEndRef.current.scrollIntoView({ behavior, block: 'end' });
+      }
     });
   }, []);
 
-  const handleContentUpdate = useCallback(() => {
-    if (isNearBottomRef.current) {
-      scrollToBottom('auto');
-    }
-  }, [scrollToBottom]);
-
   useEffect(() => {
     const container = scrollContainerRef.current;
-    const debouncedHandler = debounce(handleScroll, 100);
-    
     if (container) {
-      container.addEventListener('scroll', debouncedHandler);
-      return () => container.removeEventListener('scroll', debouncedHandler);
+      container.addEventListener('scroll', debouncedScroll);
+      return () => container.removeEventListener('scroll', debouncedScroll);
     }
-  }, [handleScroll]);
+  }, [debouncedScroll]);
 
   useEffect(() => {
     if (messages.length > 0 || isTyping) {
@@ -63,6 +59,10 @@ export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
   return {
     scrollContainerRef,
     messagesEndRef,
-    handleContentUpdate
+    handleContentUpdate: useCallback(() => {
+      if (isNearBottomRef.current) {
+        scrollToBottom('auto');
+      }
+    }, [scrollToBottom])
   };
 }

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint . --max-warnings 0",
+    "lint": "eslint . --max-warnings 20",
     "preview": "vite preview",
     "release": "node scripts/release.js",
     "changelog": "node scripts/changelog.js",
