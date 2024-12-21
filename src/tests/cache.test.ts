@@ -1,9 +1,14 @@
-import { describe, test, expect, beforeEach } from 'vitest';
+import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { cache } from '../utils/cache';
 
 describe('cache', () => {
   beforeEach(() => {
     cache.clear();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   test('stores and retrieves values', () => {
@@ -12,23 +17,30 @@ describe('cache', () => {
   });
 
   test('handles cache expiration', () => {
-    const now = Date.now();
-    const futureTime = now + 1500;
-    
     cache.set('key', 'value', { maxAge: 1000 });
     expect(cache.get('key')).toBe('value');
     
-    // Simulate time passing
-    Date.now = () => futureTime;
+    vi.advanceTimersByTime(1500);
     expect(cache.get('key')).toBeNull();
-    
-    // Restore Date.now
-    Date.now = () => now;
   });
 
   test('checks existence of keys', () => {
     cache.set('key', 'value');
     expect(cache.has('key')).toBe(true);
     expect(cache.has('nonexistent')).toBe(false);
+  });
+
+  test('deletes keys', () => {
+    cache.set('key', 'value');
+    cache.delete('key');
+    expect(cache.has('key')).toBe(false);
+  });
+
+  test('clears all entries', () => {
+    cache.set('key1', 'value1');
+    cache.set('key2', 'value2');
+    cache.clear();
+    expect(cache.has('key1')).toBe(false);
+    expect(cache.has('key2')).toBe(false);
   });
 });

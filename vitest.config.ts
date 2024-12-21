@@ -20,6 +20,9 @@ export default defineConfig({
         '**/index.ts',
         'src/vite-env.d.ts'
       ]
+    },
+    deps: {
+      inline: [/@testing-library\/jest-dom/]
     }
   },
   resolve: {

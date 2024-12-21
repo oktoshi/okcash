@@ -9,6 +9,7 @@ declare module 'vitest' {
     toHaveStyle(style: Record<string, string>): T;
     toHaveValue(value: string | number): T;
     toBeDisabled(): T;
+    toHaveClass(className: string): T;
   }
 }
 
@@ -30,6 +31,12 @@ global.IntersectionObserver = vi.fn().mockImplementation(() => ({
   disconnect: vi.fn(),
 }));
 
+// Mock requestAnimationFrame
+global.requestAnimationFrame = vi.fn(cb => {
+  setTimeout(cb, 0);
+  return 0;
+});
+
 // Mock performance API
 global.performance = {
   now: vi.fn(() => Date.now()),
@@ -41,15 +48,25 @@ global.performance = {
 } as unknown as Performance;
 
 // Mock crypto API
-global.crypto = {
+const mockCrypto = {
   subtle: {
     digest: vi.fn().mockResolvedValue(new ArrayBuffer(32))
   },
-  getRandomValues: vi.fn().mockImplementation((arr) => {
-    return arr.map(() => Math.floor(Math.random() * 256));
+  getRandomValues: vi.fn((arr: Uint8Array) => {
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = Math.floor(Math.random() * 256);
+    }
+    return arr;
   }),
   randomUUID: vi.fn(() => 'test-uuid')
 } as unknown as Crypto;
+
+Object.defineProperty(window, 'crypto', {
+  value: mockCrypto,
+  writable: true,
+  configurable: true,
+  enumerable: true
+});
 
 // Mock environment variables
 beforeAll(() => {
@@ -61,10 +78,11 @@ beforeAll(() => {
 // Clear all mocks after each test
 afterEach(() => {
   vi.clearAllMocks();
-  vi.restoreAllMocks();
+  vi.clearAllTimers();
 });
 
 // Restore environment after all tests
 afterAll(() => {
   vi.unstubAllEnvs();
+  vi.useRealTimers();
 });
