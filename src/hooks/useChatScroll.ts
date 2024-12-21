@@ -25,12 +25,7 @@ export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
     checkIfNearBottom();
   }, [checkIfNearBottom]);
 
-  const debouncedScroll = useCallback(
-    () => debounce(handleScroll, 100),
-    [handleScroll]
-  );
-
-  const scrollToBottom = useCallback((behavior: 'auto' | 'smooth' = 'smooth') => {
+  const scrollToBottom = useCallback((behavior: 'smooth' | 'auto' = 'smooth') => {
     if (!scrollContainerRef.current || !messagesEndRef.current || !isNearBottomRef.current) {
       return;
     }
@@ -47,13 +42,13 @@ export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
 
   useEffect(() => {
     const container = scrollContainerRef.current;
-    const debouncedHandler = debouncedScroll();
+    const debouncedHandler = debounce(handleScroll, 100);
     
     if (container) {
       container.addEventListener('scroll', debouncedHandler);
       return () => container.removeEventListener('scroll', debouncedHandler);
     }
-  }, [debouncedScroll]);
+  }, [handleScroll]);
 
   useEffect(() => {
     if (messages.length > 0 || isTyping) {

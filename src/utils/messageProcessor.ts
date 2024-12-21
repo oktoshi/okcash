@@ -18,7 +18,7 @@ export function processMessage(message: Message): Message {
     // Sanitize and validate content
     const sanitizedContent = sanitizeInput(validatedMessage.content);
     
-    if (!sanitizedContent || sanitizedContent.length === 0) {
+    if (!sanitizedContent) {
       throw new ValidationError('Message content cannot be empty after sanitization');
     }
 
