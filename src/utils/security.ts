@@ -30,8 +30,8 @@ export function sanitizeInput(input: string): string {
       .replace(/['";`]/g, '')
       // Remove potential command injection characters
       .replace(/[&|$><`]/g, '')
-      // Remove unicode control characters
-      .replace(/[\u0000-\u001F\u007F-\u009F]/g, '')
+      // Remove control characters
+      .replace(/[\x00-\x1F\x7F-\x9F]/g, '')
       // Normalize whitespace
       .replace(/\s+/g, ' ')
       .trim();
@@ -69,12 +69,12 @@ export function validateContentSecurity(content: string): boolean {
       /setInterval\s*\(/i,
       
       // SQL injection
-      /'\s*(\-\-|#|\/\*)/i,
-      /;\s*DROP\s+TABLE/i,
+      /'.*(-|#|\/\*)/i,
+      /;.*DROP\s+TABLE/i,
       
       // Command injection
-      /\|\s*[\w\s\-]+/i,
-      /`[\w\s\-]+`/i,
+      /\|.*[\w\s]+/i,
+      /`.*[\w\s]+`/i,
       
       // Base64 data (potential obfuscation)
       /base64.*[A-Za-z0-9+/=]{20,}/i
