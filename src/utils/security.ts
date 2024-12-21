@@ -3,6 +3,7 @@
  */
 import { logger } from './logger';
 import { ValidationError } from './errors';
+import { removeControlCharacters } from './characterSanitizer';
 
 /**
  * Sanitizes user input by removing potentially dangerous content
@@ -29,14 +30,13 @@ export function sanitizeInput(input: string): string {
       // Remove potential SQL injection characters
       .replace(/['";`]/g, '')
       // Remove potential command injection characters
-      .replace(/[&|$><`]/g, '')
-      // Remove control characters
-      .replace(/[\x00-\x1F\x7F-\x9F]/g, '')
-      // Normalize whitespace
-      .replace(/\s+/g, ' ')
-      .trim();
+      .replace(/[&|$><`]/g, '');
 
-    return sanitized;
+    // Remove control characters using dedicated utility
+    sanitized = removeControlCharacters(sanitized);
+
+    // Final pass: Normalize whitespace
+    return sanitized.replace(/\s+/g, ' ').trim();
   } catch (error) {
     logger.error('Error sanitizing input:', error);
     throw new ValidationError('Input sanitization failed');
