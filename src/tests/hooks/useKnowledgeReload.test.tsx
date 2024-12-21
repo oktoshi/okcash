@@ -5,6 +5,7 @@ import { useKnowledgeReload } from '../../hooks/useKnowledgeReload';
 describe('useKnowledgeReload', () => {
   const mockReload = vi.fn();
   const mockOn = vi.fn();
+  const mockOff = vi.fn();
 
   beforeEach(() => {
     vi.resetModules();
@@ -13,12 +14,14 @@ describe('useKnowledgeReload', () => {
       writable: true
     });
     mockOn.mockClear();
+    mockOff.mockClear();
     mockReload.mockClear();
   });
 
   test('sets up hot reload listener', () => {
     const mockHot = {
-      on: mockOn
+      on: mockOn,
+      off: mockOff
     };
 
     vi.stubGlobal('import.meta', { 
@@ -27,17 +30,21 @@ describe('useKnowledgeReload', () => {
       glob: () => ({})
     });
 
-    renderHook(() => useKnowledgeReload());
+    const { unmount } = renderHook(() => useKnowledgeReload());
     
     expect(mockOn).toHaveBeenCalledWith(
       'vite:beforeUpdate',
       expect.any(Function)
     );
+
+    unmount();
+    expect(mockOff).toHaveBeenCalled();
   });
 
   test('handles missing hot reload', () => {
     vi.stubGlobal('import.meta', {
       ...import.meta,
+      hot: undefined,
       glob: () => ({})
     });
 
@@ -48,7 +55,8 @@ describe('useKnowledgeReload', () => {
 
   test('reloads on knowledge base changes', () => {
     const mockHot = {
-      on: mockOn
+      on: mockOn,
+      off: mockOff
     };
 
     vi.stubGlobal('import.meta', { 

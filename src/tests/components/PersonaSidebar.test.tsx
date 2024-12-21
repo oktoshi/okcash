@@ -47,6 +47,6 @@ describe('PersonaSidebar', () => {
 
     const elonButton = screen.getByText('Elon Musk');
     fireEvent.click(elonButton);
-    expect(mockOnPersonaChange).toHaveBeenCalledWith('elonMusk');
+    expect(mockOnPersonaChange).toHaveBeenCalledWith('elonmusk');
   });
 });

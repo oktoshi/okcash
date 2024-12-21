@@ -1,5 +1,5 @@
 import { describe, test, expect, vi } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { render } from '@testing-library/react';
 import { useChatFocusProvider, useChatFocus, ChatFocusContext } from '../../hooks/useChatFocus';
 
@@ -17,10 +17,7 @@ describe('useChatFocus', () => {
     // Mock input ref
     result.current.inputRef.current = { focus: mockFocus } as unknown as HTMLInputElement;
     
-    act(() => {
-      result.current.focusInput();
-    });
-    
+    result.current.focusInput();
     expect(mockFocus).toHaveBeenCalled();
   });
 
@@ -30,22 +27,24 @@ describe('useChatFocus', () => {
     // Ensure ref is null
     result.current.inputRef.current = null;
     
-    act(() => {
-      // Should not throw
-      expect(() => result.current.focusInput()).not.toThrow();
-    });
+    // Should not throw
+    expect(() => result.current.focusInput()).not.toThrow();
   });
 
   test('throws when used outside provider', () => {
-    const { result } = renderHook(() => useChatFocus());
-    expect(result.error).toBeInstanceOf(Error);
-    expect(result.error?.message).toBe('useChatFocus must be used within a ChatFocusProvider');
+    const TestComponent = () => {
+      const { focusInput } = useChatFocus();
+      return <button onClick={focusInput}>Focus</button>;
+    };
+
+    expect(() => render(<TestComponent />))
+      .toThrow('useChatFocus must be used within a ChatFocusProvider');
   });
 
   test('provides context value to children', () => {
     const TestComponent = () => {
-      const context = useChatFocus();
-      return <div>{context ? 'has context' : 'no context'}</div>;
+      const { focusInput } = useChatFocus();
+      return <button onClick={focusInput}>Focus</button>;
     };
 
     const { getByText } = render(
@@ -54,6 +53,6 @@ describe('useChatFocus', () => {
       </ChatFocusContext.Provider>
     );
 
-    expect(getByText('has context')).toBeInTheDocument();
+    expect(getByText('Focus')).toBeInTheDocument();
   });
 });

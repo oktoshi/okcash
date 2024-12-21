@@ -1,18 +1,20 @@
-import { createContext, useContext, useRef } from 'react';
+import { createContext, useContext, useRef, useCallback } from 'react';
 
-type ChatFocusContextType = {
+interface ChatFocusContextType {
   inputRef: React.RefObject<HTMLInputElement>;
   focusInput: () => void;
-};
+}
 
 export const ChatFocusContext = createContext<ChatFocusContextType | null>(null);
 
 export function useChatFocusProvider() {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const focusInput = () => {
-    inputRef.current?.focus();
-  };
+  const focusInput = useCallback(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   return {
     inputRef,
