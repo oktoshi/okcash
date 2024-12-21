@@ -26,7 +26,7 @@ export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
     checkIfNearBottom();
   }, [checkIfNearBottom]);
 
-  const scrollToBottom = useCallback((behavior: ScrollBehavior = 'smooth') => {
+  const scrollToBottom = useCallback((behavior: 'smooth' | 'auto' = 'smooth') => {
     requestAnimationFrame(() => {
       if (scrollContainerRef.current && messagesEndRef.current && isNearBottomRef.current) {
         messagesEndRef.current.scrollIntoView({ behavior, block: 'end' });

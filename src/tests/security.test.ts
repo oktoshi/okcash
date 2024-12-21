@@ -3,10 +3,7 @@ import {
   sanitizeInput, 
   validateContentSecurity, 
   validateToken,
-  generateSecureId,
-  validateContentType,
-  escapeHtml,
-  generateHash
+  generateSecureId
 } from '../utils/security';
 
 describe('security', () => {

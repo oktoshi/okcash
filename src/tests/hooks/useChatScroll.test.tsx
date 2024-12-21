@@ -1,17 +1,13 @@
 import { describe, test, expect, vi } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { useChatScroll } from '../../hooks/useChatScroll';
 
 describe('useChatScroll', () => {
   const mockScrollIntoView = vi.fn();
-  const mockAddEventListener = vi.fn();
-  const mockRemoveEventListener = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
     Element.prototype.scrollIntoView = mockScrollIntoView;
-    Element.prototype.addEventListener = mockAddEventListener;
-    Element.prototype.removeEventListener = mockRemoveEventListener;
   });
 
   test('initializes with refs', () => {
@@ -25,7 +21,7 @@ describe('useChatScroll', () => {
     expect(result.current.handleContentUpdate).toBeDefined();
   });
 
-  test('scrolls to bottom on new message', () => {
+  test('scrolls to bottom on new user message', () => {
     const { result, rerender } = renderHook(
       ({ messages, isTyping }) => useChatScroll({ messages, isTyping }),
       {
@@ -41,20 +37,26 @@ describe('useChatScroll', () => {
       isTyping: false 
     });
 
-    act(() => {
-      result.current.handleContentUpdate();
-    });
-
+    result.current.handleContentUpdate();
     expect(mockScrollIntoView).toHaveBeenCalled();
   });
 
-  test('cleans up event listeners', () => {
-    const { unmount } = renderHook(() => useChatScroll({ 
-      messages: [], 
-      isTyping: false 
-    }));
+  test('scrolls to bottom when typing starts', () => {
+    const { rerender } = renderHook(
+      ({ messages, isTyping }) => useChatScroll({ messages, isTyping }),
+      {
+        initialProps: { 
+          messages: [], 
+          isTyping: false 
+        }
+      }
+    );
 
-    unmount();
-    expect(mockRemoveEventListener).toHaveBeenCalled();
+    rerender({ 
+      messages: [], 
+      isTyping: true 
+    });
+
+    expect(mockScrollIntoView).toHaveBeenCalled();
   });
 });

@@ -1,13 +1,11 @@
-import { describe, test, expect, vi } from 'vitest';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { sendMessage } from '../api';
 import { personas } from '../config/personas';
 import { logger } from '../utils/logger';
 import { metrics } from '../utils/metrics';
 import { analytics } from '../utils/analytics';
 import { RateLimiter } from '../utils/rateLimit';
-import * as knowledgeIntegration from '../utils/knowledgeIntegration';
-import * as messageProcessor from '../utils/messageProcessor';
-import * as responseFormatter from '../utils/responseFormatter';
+import * as validation from '../utils/validation';
 import { ValidationError } from '../utils/errors';
 
 // Mock all dependencies
@@ -16,9 +14,7 @@ vi.mock('../utils/metrics');
 vi.mock('../utils/analytics');
 vi.mock('../utils/rateLimit');
 vi.mock('../utils/cache');
-vi.mock('../utils/knowledgeIntegration');
-vi.mock('../utils/messageProcessor');
-vi.mock('../utils/responseFormatter');
+vi.mock('../utils/validation');
 
 // Mock OpenAI
 vi.mock('openai', () => ({
@@ -43,16 +39,12 @@ describe('sendMessage', () => {
     { id: '1', role: 'user', content: 'Hello' }
   ];
 
-  test('sends message and returns response', async () => {
-    vi.mocked(messageProcessor.processMessages).mockImplementation(msgs => msgs);
-    vi.mocked(knowledgeIntegration.integrateKnowledge).mockResolvedValue({
-      topics: ['test'],
-      prompts: ['test'],
-      qa: []
-    });
-    vi.mocked(knowledgeIntegration.findBestMatch).mockResolvedValue(null);
-    vi.mocked(responseFormatter.formatResponse).mockImplementation(msg => msg);
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(validation.validateMessages).mockReturnValue(testMessages);
+  });
 
+  test('sends message and returns response', async () => {
     const response = await sendMessage(testMessages, testPersona);
     expect(response).toBeDefined();
     expect(response?.content).toBeDefined();
@@ -61,7 +53,7 @@ describe('sendMessage', () => {
   });
 
   test('handles validation errors', async () => {
-    vi.mocked(messageProcessor.processMessages).mockImplementationOnce(() => {
+    vi.mocked(validation.validateMessages).mockImplementation(() => {
       throw new ValidationError('Invalid message');
     });
     await expect(sendMessage(testMessages, testPersona))
@@ -70,7 +62,7 @@ describe('sendMessage', () => {
   });
 
   test('handles rate limiting', async () => {
-    vi.spyOn(RateLimiter.prototype, 'checkLimit').mockReturnValueOnce(false);
+    vi.spyOn(RateLimiter.prototype, 'checkLimit').mockReturnValue(false);
     await expect(sendMessage(testMessages, testPersona))
       .rejects.toThrow('Rate limit exceeded');
   });

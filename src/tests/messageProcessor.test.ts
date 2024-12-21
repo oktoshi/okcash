@@ -2,15 +2,12 @@ import { describe, test, expect, vi } from 'vitest';
 import { processMessage, processMessages } from '../utils/messageProcessor';
 import { ValidationError } from '../utils/errors';
 import * as security from '../utils/security';
-import { logger } from '../utils/logger';
 import type { Message } from '../types';
 
 vi.mock('../utils/security', () => ({
   sanitizeInput: vi.fn(str => str),
   validateContentSecurity: vi.fn(() => true)
 }));
-
-vi.mock('../utils/logger');
 
 describe('messageProcessor', () => {
   const validMessage: Message = { 

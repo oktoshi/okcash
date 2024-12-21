@@ -1,10 +1,10 @@
-type AnyFunction = (...args: any[]) => any;
+type DebouncedFunction<T extends (...args: unknown[]) => unknown> = (...args: Parameters<T>) => void;
 
-export function debounce<T extends AnyFunction>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number,
   options: { leading?: boolean } = {}
-): (...args: Parameters<T>) => void {
+): DebouncedFunction<T> {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
   let lastArgs: Parameters<T> | null = null;
 

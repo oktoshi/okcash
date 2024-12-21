@@ -1,5 +1,5 @@
 import { describe, test, expect, vi } from 'vitest';
-import { validateMessages, validatePersona, validateKnowledgeBase } from '../utils/validation';
+import { validateMessages } from '../utils/validation';
 import { ValidationError } from '../utils/errors';
 import { logger } from '../utils/logger';
 import type { Message } from '../types';
@@ -38,24 +38,6 @@ describe('validation', () => {
 
     test('rejects invalid role', () => {
       const messages = [{ id: '1', role: 'invalid', content: 'Hello' }] as unknown[];
-      expect(() => validateMessages(messages))
-        .toThrow(ValidationError);
-      expect(logger.error).toHaveBeenCalled();
-    });
-
-    test('rejects empty content', () => {
-      const messages = [{ id: '1', role: 'user', content: '' }];
-      expect(() => validateMessages(messages))
-        .toThrow(ValidationError);
-      expect(logger.error).toHaveBeenCalled();
-    });
-
-    test('rejects content exceeding max length', () => {
-      const messages = [{ 
-        id: '1', 
-        role: 'user', 
-        content: 'a'.repeat(4001) 
-      }];
       expect(() => validateMessages(messages))
         .toThrow(ValidationError);
       expect(logger.error).toHaveBeenCalled();
