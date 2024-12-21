@@ -7,7 +7,7 @@ import { ValidationError } from './errors';
 
 // Message validation schema
 const messageSchema = z.object({
-  id: z.string().uuid('Invalid message ID'),
+  id: z.string(),
   role: z.enum(['user', 'assistant', 'system']),
   content: z.string()
     .min(1, 'Message cannot be empty')

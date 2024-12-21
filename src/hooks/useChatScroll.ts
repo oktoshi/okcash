@@ -31,12 +31,16 @@ export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
   );
 
   const scrollToBottom = useCallback((behavior: 'auto' | 'smooth' = 'smooth') => {
-    requestAnimationFrame(() => {
-      if (scrollContainerRef.current && messagesEndRef.current && isNearBottomRef.current) {
-        messagesEndRef.current.scrollIntoView({ behavior, block: 'end' });
-      }
-    });
+    if (scrollContainerRef.current && messagesEndRef.current && isNearBottomRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior, block: 'end' });
+    }
   }, []);
+
+  const handleContentUpdate = useCallback(() => {
+    if (isNearBottomRef.current) {
+      scrollToBottom('auto');
+    }
+  }, [scrollToBottom]);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -59,10 +63,6 @@ export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
   return {
     scrollContainerRef,
     messagesEndRef,
-    handleContentUpdate: useCallback(() => {
-      if (isNearBottomRef.current) {
-        scrollToBottom('auto');
-      }
-    }, [scrollToBottom])
+    handleContentUpdate
   };
 }

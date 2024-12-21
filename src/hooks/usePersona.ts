@@ -25,11 +25,11 @@ export function usePersona() {
       allTopics.push(...currentPersona.customKnowledge);
     }
     
-    return allTopics;
+    return Array.from(new Set(allTopics));
   }, [currentPersona]);
 
   const changePersona = useCallback((personaKey: string) => {
-    const newPersona = personas[personaKey];
+    const newPersona = personas[personaKey.toLowerCase()];
     if (newPersona) {
       setCurrentPersona(newPersona);
     }
