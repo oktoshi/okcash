@@ -13,24 +13,32 @@ export function sanitizeInput(input: string): string {
     if (!input) return '';
 
     // First pass: Remove dangerous HTML and scripts
-    let sanitized = input
-      // Remove complete script tags and their content
-      .replace(/<script[\s\S]*?<\/script>/gi, '')
-      // Remove dangerous HTML event attributes
-      .replace(/\son\w+\s*=\s*["'].*?["']/gi, '')
-      // Remove dangerous attributes and their content
-      .replace(/\s(href|src|style|formaction)\s*=\s*["'].*?["']/gi, '')
-      // Remove all remaining HTML tags
-      .replace(/<[^>]*>/g, '')
-      // Remove dangerous protocols
-      .replace(/javascript:|data:|vbscript:|file:/gi, '');
+    let sanitized = input;
+    let previous;
+    do {
+      previous = sanitized;
+      sanitized = sanitized
+        // Remove complete script tags and their content
+        .replace(/<script[\s\S]*?<\/script>/gi, '')
+        // Remove dangerous HTML event attributes
+        .replace(/\son\w+\s*=\s*["'].*?["']/gi, '')
+        // Remove dangerous attributes and their content
+        .replace(/\s(href|src|style|formaction)\s*=\s*["'].*?["']/gi, '')
+        // Remove all remaining HTML tags
+        .replace(/<[^>]*>/g, '')
+        // Remove dangerous protocols
+        .replace(/javascript:|data:|vbscript:|file:/gi, '');
+    } while (sanitized !== previous);
 
     // Second pass: Multi-character sanitization
-    sanitized = sanitized
-      // Remove potential SQL injection characters
-      .replace(/['";`]/g, '')
-      // Remove potential command injection characters
-      .replace(/[&|$><`]/g, '');
+    do {
+      previous = sanitized;
+      sanitized = sanitized
+        // Remove potential SQL injection characters
+        .replace(/['";`]/g, '')
+        // Remove potential command injection characters
+        .replace(/[&|$><`]/g, '');
+    } while (sanitized !== previous);
 
     // Remove control characters using dedicated utility
     sanitized = removeControlCharacters(sanitized);
