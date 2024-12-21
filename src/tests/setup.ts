@@ -49,8 +49,13 @@ Object.defineProperty(window, 'crypto', {
   writable: true
 });
 
-// Mock environment variables
+// Mock Vite's import.meta
 beforeAll(() => {
+  const mockHot = {
+    on: vi.fn(),
+    off: vi.fn()
+  };
+
   vi.stubGlobal('import.meta', {
     env: {
       MODE: 'test',
@@ -58,11 +63,8 @@ beforeAll(() => {
       VITE_SITE_URL: 'http://localhost:5173',
       VITE_APP_NAME: 'OKai S Test'
     },
-    hot: {
-      on: vi.fn(),
-      off: vi.fn()
-    },
-    glob: () => ({})
+    hot: mockHot,
+    glob: vi.fn().mockReturnValue({})
   });
 });
 

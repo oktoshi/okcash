@@ -13,13 +13,15 @@ export function sanitizeInput(input: string): string {
 
     // Remove HTML tags and dangerous patterns
     const sanitized = input
-      // Remove HTML tags
+      // Remove script tags and content
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      // Remove other HTML tags
       .replace(/<[^>]*>/g, '')
       // Remove dangerous keywords
       .replace(/\b(script|javascript|eval|alert|vbscript|on\w+\s*=)\b/gi, '')
       // Remove special characters except basic punctuation
       .replace(/[^\w\s.,!?-]/g, ' ')
-      // Normalize whitespace (collapse multiple spaces to single space)
+      // Normalize whitespace
       .replace(/\s+/g, ' ')
       .trim();
 

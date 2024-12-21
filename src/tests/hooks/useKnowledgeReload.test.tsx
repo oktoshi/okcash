@@ -27,7 +27,9 @@ describe('useKnowledgeReload', () => {
     vi.stubGlobal('import.meta', { 
       hot: mockHot,
       glob: () => ({
-        '../config/{knowledge,personas}/**/*.ts': {}
+        '../config/{knowledge,personas}/**/*.ts': {
+          './knowledge/test.ts': () => Promise.resolve({ default: {} })
+        }
       })
     });
 
@@ -70,7 +72,7 @@ describe('useKnowledgeReload', () => {
 
     renderHook(() => useKnowledgeReload());
 
-    // Get the callback passed to hot.on
+    // Get and execute the callback passed to hot.on
     const callback = mockOn.mock.calls[0][1];
     callback();
 

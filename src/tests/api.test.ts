@@ -48,6 +48,4 @@ describe('sendMessage', () => {
       requestId: expect.any(String)
     }));
   });
-
-  // Rest of the tests...
 });

@@ -26,6 +26,12 @@ describe('textMatching', () => {
       );
       expect(similarity).toBeLessThan(0.3);
     });
+
+    test('handles empty input', () => {
+      expect(calculateSimilarity('', '')).toBe(0);
+      expect(calculateSimilarity('test', '')).toBe(0);
+      expect(calculateSimilarity('', 'test')).toBe(0);
+    });
   });
 
   describe('extractKeyTerms', () => {
@@ -44,14 +50,19 @@ describe('textMatching', () => {
     });
 
     test('handles empty input', () => {
-      const terms = extractKeyTerms('');
-      expect(terms).toEqual([]);
+      expect(extractKeyTerms('')).toEqual([]);
+      expect(extractKeyTerms(' ')).toEqual([]);
     });
 
     test('handles special characters', () => {
       const terms = extractKeyTerms('How do I stake OK?!@#$%^&*()');
       expect(terms).toContain('stake');
       expect(terms).toContain('ok');
+    });
+
+    test('normalizes case', () => {
+      const terms = extractKeyTerms('STAKE OKcash');
+      expect(terms).toEqual(['stake', 'okcash']);
     });
   });
 });

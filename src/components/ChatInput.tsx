@@ -9,14 +9,14 @@ interface ChatInputProps {
 
 export function ChatInput({ onSend, disabled }: ChatInputProps) {
   const [input, setInput] = useState('');
-  const { inputRef } = useChatFocus();
+  const { inputRef, focusInput } = useChatFocus();
 
   // Auto-focus when disabled state changes from true to false (after AI responds)
   useEffect(() => {
-    if (!disabled && inputRef.current) {
-      inputRef.current.focus();
+    if (!disabled) {
+      focusInput();
     }
-  }, [disabled, inputRef]);
+  }, [disabled, focusInput]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
