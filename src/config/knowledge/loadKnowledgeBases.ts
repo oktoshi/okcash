@@ -1,45 +1,24 @@
 import type { KnowledgeBase } from './types';
 
-// Mock knowledge bases for testing
-const mockKnowledgeBases = {
-  okcash: {
-    name: 'Okcash',
-    topics: { basics: ['Test Topic'] },
-    prompts: { default: 'Test prompt' },
-    sampleQA: {
-      basics: [{
-        question: 'How do I stake OK?',
-        answer: 'Test answer'
-      }]
-    }
-  },
-  anime: {
-    name: 'Anime',
-    topics: { general: ['Test Topic'] },
-    prompts: { default: 'Test prompt' }
-  }
-} as Record<string, KnowledgeBase>;
+// Import all knowledge base files dynamically
+const knowledgeContext = import.meta.glob<{ default: KnowledgeBase }>('./*.ts', { 
+  eager: true 
+});
 
+// Convert the imported modules into a knowledge bases object
 export function loadKnowledgeBases(): Record<string, KnowledgeBase> {
-  // In a test environment, return mock data
-  if (import.meta.env.MODE === 'test') {
-    return mockKnowledgeBases;
-  }
-
-  // In development/production, load actual knowledge bases
-  const knowledgeContext = import.meta.glob<{ default: KnowledgeBase }>('./*.ts', { 
-    eager: true 
-  });
-
   return Object.entries(knowledgeContext).reduce((acc, [path, module]) => {
+    // Skip non-knowledge base files
     if (path.includes('index.ts') || 
         path.includes('types.ts') || 
         path.includes('loadKnowledgeBases.ts')) {
       return acc;
     }
     
-    const key = path.replace(/^.*\/(.+)\.ts$/, '$1');
+    // Extract the filename without extension as the key
+    const key = path.replace(/^.*\/(.+)\.ts$/, '$1').toLowerCase();
     
+    // Add the knowledge base to the accumulator
     if (module.default) {
       acc[key] = module.default;
     }

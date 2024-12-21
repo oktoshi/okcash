@@ -30,15 +30,15 @@ export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
     [handleScroll]
   );
 
-  const scrollToBottom = useCallback((behavior: 'auto' | 'smooth' = 'smooth') => {
+  const scrollToBottom = useCallback(() => {
     if (scrollContainerRef.current && messagesEndRef.current && isNearBottomRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior, block: 'end' });
+      messagesEndRef.current.scrollIntoView({ behavior: 'auto', block: 'end' });
     }
   }, []);
 
   const handleContentUpdate = useCallback(() => {
     if (isNearBottomRef.current) {
-      scrollToBottom('auto');
+      scrollToBottom();
     }
   }, [scrollToBottom]);
 
@@ -55,7 +55,7 @@ export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
       const lastMessage = messages[messages.length - 1];
       if (lastMessage?.role === 'user' || isTyping) {
         isNearBottomRef.current = true;
-        scrollToBottom('auto');
+        scrollToBottom();
       }
     }
   }, [messages, isTyping, scrollToBottom]);

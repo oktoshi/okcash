@@ -26,10 +26,6 @@ export function processMessage(message: Message): Message {
       throw new ValidationError('Invalid message content detected');
     }
 
-    if (sanitizedContent.length > 4000) {
-      throw new ValidationError('Message content exceeds maximum length (4000 characters)');
-    }
-
     return {
       ...validatedMessage,
       content: sanitizedContent

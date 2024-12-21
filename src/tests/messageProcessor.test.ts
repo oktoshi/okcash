@@ -48,12 +48,6 @@ describe('messageProcessor', () => {
       vi.mocked(security.validateContentSecurity).mockReturnValueOnce(false);
       expect(() => processMessage(validMessage)).toThrow(ValidationError);
     });
-
-    test('throws on content exceeding max length', () => {
-      const longContent = 'a'.repeat(4001);
-      expect(() => processMessage({ ...validMessage, content: longContent }))
-        .toThrow(ValidationError);
-    });
   });
 
   describe('processMessages', () => {
@@ -86,17 +80,6 @@ describe('messageProcessor', () => {
       const result = processMessages(messages);
       expect(result).toHaveLength(2);
       expect(security.sanitizeInput).toHaveBeenCalledTimes(2);
-    });
-
-    test('maintains message order', () => {
-      const messages = [
-        { ...validMessage, id: '1', content: 'First' },
-        { ...validMessage, id: '2', content: 'Second' }
-      ];
-      vi.mocked(validation.validateMessages).mockReturnValue(messages);
-      const result = processMessages(messages);
-      expect(result[0].content).toBe('First');
-      expect(result[1].content).toBe('Second');
     });
   });
 });

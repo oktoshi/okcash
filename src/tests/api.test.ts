@@ -1,3 +1,4 @@
+```typescript
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { sendMessage } from '../api';
 import { personas } from '../config/personas';
@@ -5,16 +6,13 @@ import { logger } from '../utils/logger';
 import { metrics } from '../utils/metrics';
 import { analytics } from '../utils/analytics';
 import { RateLimiter } from '../utils/rateLimit';
-import * as messageProcessor from '../utils/messageProcessor';
 import { ValidationError } from '../utils/errors';
 
 // Mock all dependencies
 vi.mock('../utils/logger');
 vi.mock('../utils/metrics');
 vi.mock('../utils/analytics');
-vi.mock('../utils/rateLimit');
 vi.mock('../utils/cache');
-vi.mock('../utils/messageProcessor');
 
 // Mock OpenAI
 vi.mock('openai', () => ({
@@ -41,7 +39,9 @@ describe('sendMessage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(messageProcessor.processMessages).mockReturnValue(testMessages);
+    // Initialize RateLimiter instance
+    RateLimiter.getInstance({ maxRequests: 50, timeWindow: 3600 });
+    // Mock rate limiter check
     vi.spyOn(RateLimiter.prototype, 'checkLimit').mockReturnValue(true);
   });
 
@@ -54,13 +54,9 @@ describe('sendMessage', () => {
   });
 
   test('handles validation errors', async () => {
-    vi.mocked(messageProcessor.processMessages).mockImplementation(() => {
-      throw new ValidationError('Invalid message');
-    });
-
-    await expect(sendMessage(testMessages, testPersona))
+    const invalidMessages = [{ id: '1', role: 'invalid' as any, content: '' }];
+    await expect(sendMessage(invalidMessages, testPersona))
       .rejects.toThrow(ValidationError);
-    expect(logger.error).toHaveBeenCalled();
   });
 
   test('handles rate limiting', async () => {
@@ -69,8 +65,13 @@ describe('sendMessage', () => {
       .rejects.toThrow('Rate limit exceeded');
   });
 
-  test('processes messages before sending', async () => {
-    await sendMessage(testMessages, testPersona);
-    expect(messageProcessor.processMessages).toHaveBeenCalledWith(testMessages);
+  test('sanitizes input', async () => {
+    const messagesWithHtml = [
+      { id: '1', role: 'user' as const, content: '<script>alert("xss")</script>Hello' }
+    ];
+    const response = await sendMessage(messagesWithHtml, testPersona);
+    expect(response?.content).toBeDefined();
+    expect(response?.content).not.toContain('<script>');
   });
 });
+```

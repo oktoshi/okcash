@@ -9,7 +9,14 @@ interface TermWeight {
   [term: string]: number;
 }
 
-class TextMatchingConfig {
+// Common English stop words
+const stopWords = new Set([
+  'a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'do', 'for', 'from', 'has',
+  'he', 'how', 'in', 'is', 'it', 'its', 'of', 'on', 'that', 'the', 'to', 'was',
+  'were', 'what', 'when', 'where', 'who', 'will', 'with'
+]);
+
+export class TextMatchingConfig {
   private static instance: TextMatchingConfig;
   private patternConfigs: Map<string, Pattern[]> = new Map();
   private termWeightConfigs: Map<string, TermWeight> = new Map();
@@ -57,7 +64,7 @@ export function extractKeyTerms(text: string): string[] {
   const normalized = normalizeText(text);
   return normalized
     .split(/\s+/)
-    .filter(term => term.length > 1 && !stopWords.has(term));
+    .filter(term => term.length > 1 && !stopWords.has(term.toLowerCase()));
 }
 
 // Private helper functions
@@ -131,12 +138,5 @@ function levenshteinDistance(s1: string, s2: string): number {
   
   return row[s2.length];
 }
-
-// Common English stop words
-const stopWords = new Set([
-  'a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'for',
-  'from', 'has', 'he', 'in', 'is', 'it', 'its', 'of', 'on',
-  'that', 'the', 'to', 'was', 'were', 'will', 'with'
-]);
 
 export const textMatchingConfig = TextMatchingConfig.getInstance();

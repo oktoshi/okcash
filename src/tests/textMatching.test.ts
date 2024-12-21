@@ -1,3 +1,4 @@
+```typescript
 import { describe, test, expect } from 'vitest';
 import { calculateSimilarity, extractKeyTerms } from '../utils/textMatching';
 
@@ -29,7 +30,7 @@ describe('textMatching', () => {
   });
 
   describe('extractKeyTerms', () => {
-    test('extracts key terms from text', () => {
+    test('extracts key terms', () => {
       const terms = extractKeyTerms('How do I stake Okcash?');
       expect(terms).toContain('stake');
       expect(terms).toContain('okcash');
@@ -40,6 +41,19 @@ describe('textMatching', () => {
       expect(terms).not.toContain('how');
       expect(terms).not.toContain('do');
       expect(terms).not.toContain('i');
+      expect(terms).toContain('stake');
+    });
+
+    test('handles empty input', () => {
+      const terms = extractKeyTerms('');
+      expect(terms).toEqual([]);
+    });
+
+    test('handles special characters', () => {
+      const terms = extractKeyTerms('How do I stake OK?!@#$%^&*()');
+      expect(terms).toContain('stake');
+      expect(terms).toContain('ok');
     });
   });
 });
+```
