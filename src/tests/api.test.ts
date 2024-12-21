@@ -4,7 +4,6 @@ import { personas } from '../config/personas';
 import { metrics } from '../utils/metrics';
 import { analytics } from '../utils/analytics';
 import { RateLimiter } from '../utils/rateLimit';
-import { ValidationError } from '../utils/errors';
 
 // Mock all dependencies
 vi.mock('../utils/metrics');
