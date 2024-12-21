@@ -5,7 +5,7 @@ import { logger } from '../utils/logger';
 import { metrics } from '../utils/metrics';
 import { analytics } from '../utils/analytics';
 import { RateLimiter } from '../utils/rateLimit';
-import * as validation from '../utils/validation';
+import * as messageProcessor from '../utils/messageProcessor';
 import { ValidationError } from '../utils/errors';
 
 // Mock all dependencies
@@ -14,7 +14,7 @@ vi.mock('../utils/metrics');
 vi.mock('../utils/analytics');
 vi.mock('../utils/rateLimit');
 vi.mock('../utils/cache');
-vi.mock('../utils/validation');
+vi.mock('../utils/messageProcessor');
 
 // Mock OpenAI
 vi.mock('openai', () => ({
@@ -36,12 +36,13 @@ vi.mock('openai', () => ({
 describe('sendMessage', () => {
   const testPersona = personas.okai;
   const testMessages = [
-    { id: '1', role: 'user', content: 'Hello' }
+    { id: '1', role: 'user' as const, content: 'Hello' }
   ];
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(validation.validateMessages).mockReturnValue(testMessages);
+    vi.mocked(messageProcessor.processMessages).mockReturnValue(testMessages);
+    vi.spyOn(RateLimiter.prototype, 'checkLimit').mockReturnValue(true);
   });
 
   test('sends message and returns response', async () => {
@@ -53,9 +54,10 @@ describe('sendMessage', () => {
   });
 
   test('handles validation errors', async () => {
-    vi.mocked(validation.validateMessages).mockImplementation(() => {
+    vi.mocked(messageProcessor.processMessages).mockImplementation(() => {
       throw new ValidationError('Invalid message');
     });
+
     await expect(sendMessage(testMessages, testPersona))
       .rejects.toThrow(ValidationError);
     expect(logger.error).toHaveBeenCalled();
@@ -65,5 +67,10 @@ describe('sendMessage', () => {
     vi.spyOn(RateLimiter.prototype, 'checkLimit').mockReturnValue(false);
     await expect(sendMessage(testMessages, testPersona))
       .rejects.toThrow('Rate limit exceeded');
+  });
+
+  test('processes messages before sending', async () => {
+    await sendMessage(testMessages, testPersona);
+    expect(messageProcessor.processMessages).toHaveBeenCalledWith(testMessages);
   });
 });

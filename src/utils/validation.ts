@@ -32,8 +32,8 @@ const knowledgeBaseSchema = z.object({
   topics: z.record(z.array(z.string())),
   prompts: z.record(z.string()),
   sampleQA: z.record(z.array(z.object({
-    question: z.string().min(1),
-    answer: z.string().min(1)
+    question: z.string().min(1, 'Question cannot be empty'),
+    answer: z.string().min(1, 'Answer cannot be empty')
   }))).optional()
 });
 
@@ -47,27 +47,41 @@ export function validateMessages(messages: unknown): Message[] {
       throw new ValidationError('Messages array cannot be empty');
     }
 
-    return z.array(messageSchema).parse(messages);
+    const result = z.array(messageSchema).safeParse(messages);
+    
+    if (!result.success) {
+      throw new ValidationError(result.error.message);
+    }
+
+    return result.data;
   } catch (error) {
-    logger.error('Message validation failed:', error);
+    logger.error('Message validation failed:', { error, messages });
     throw error instanceof ValidationError ? error : new ValidationError('Invalid messages');
   }
 }
 
 export function validatePersona(persona: unknown): AIPersona {
   try {
-    return personaSchema.parse(persona);
+    const result = personaSchema.safeParse(persona);
+    if (!result.success) {
+      throw new ValidationError(result.error.message);
+    }
+    return result.data;
   } catch (error) {
-    logger.error('Persona validation failed:', error);
+    logger.error('Persona validation failed:', { error, persona });
     throw new ValidationError('Invalid persona configuration');
   }
 }
 
 export function validateKnowledgeBase(kb: unknown): KnowledgeBase {
   try {
-    return knowledgeBaseSchema.parse(kb);
+    const result = knowledgeBaseSchema.safeParse(kb);
+    if (!result.success) {
+      throw new ValidationError(result.error.message);
+    }
+    return result.data;
   } catch (error) {
-    logger.error('Knowledge base validation failed:', error);
+    logger.error('Knowledge base validation failed:', { error, kb });
     throw new ValidationError('Invalid knowledge base configuration');
   }
 }
