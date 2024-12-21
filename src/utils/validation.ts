@@ -1,7 +1,13 @@
 import { z } from 'zod';
+import { logger } from './logger';
+import type { Message } from '../types';
+import type { AIPersona } from '../config/personas/types';
+import type { KnowledgeBase } from '../config/knowledge/types';
+import { ValidationError } from './errors';
 
 // Message validation schema
-export const messageSchema = z.object({
+const messageSchema = z.object({
+  id: z.string().min(1, 'Message ID is required'),
   role: z.enum(['user', 'assistant', 'system']),
   content: z.string()
     .min(1, 'Message cannot be empty')
@@ -10,10 +16,10 @@ export const messageSchema = z.object({
 });
 
 // Persona validation schema
-export const personaSchema = z.object({
-  name: z.string().min(1),
-  description: z.string().min(1),
-  systemPrompt: z.string().min(1),
+const personaSchema = z.object({
+  name: z.string().min(1, 'Persona name is required'),
+  description: z.string().min(1, 'Persona description is required'),
+  systemPrompt: z.string().min(1, 'System prompt is required'),
   knowledgeBases: z.array(z.string()).optional(),
   customKnowledge: z.array(z.string()).optional(),
   displayOrder: z.number().optional(),
@@ -21,27 +27,42 @@ export const personaSchema = z.object({
 });
 
 // Knowledge base validation schema
-export const knowledgeBaseSchema = z.object({
-  name: z.string().min(1),
+const knowledgeBaseSchema = z.object({
+  name: z.string().min(1, 'Knowledge base name is required'),
   topics: z.record(z.array(z.string())),
   prompts: z.record(z.string()),
   sampleQA: z.record(z.array(z.object({
-    question: z.string().min(1),
-    answer: z.string().min(1)
+    question: z.string(),
+    answer: z.string()
   }))).optional()
 });
 
-// Validate message array
-export function validateMessages(messages: unknown[]) {
-  return z.array(messageSchema).parse(messages);
+export function validateMessages(messages: unknown[]): Message[] {
+  try {
+    if (!Array.isArray(messages)) {
+      throw new ValidationError('Messages must be an array');
+    }
+    return z.array(messageSchema).parse(messages);
+  } catch (error) {
+    logger.error('Message validation failed:', error);
+    throw error instanceof ValidationError ? error : new ValidationError('Invalid messages');
+  }
 }
 
-// Validate persona
-export function validatePersona(persona: unknown) {
-  return personaSchema.parse(persona);
+export function validatePersona(persona: unknown): AIPersona {
+  try {
+    return personaSchema.parse(persona);
+  } catch (error) {
+    logger.error('Persona validation failed:', error);
+    throw new ValidationError('Invalid persona configuration');
+  }
 }
 
-// Validate knowledge base
-export function validateKnowledgeBase(kb: unknown) {
-  return knowledgeBaseSchema.parse(kb);
+export function validateKnowledgeBase(kb: unknown): KnowledgeBase {
+  try {
+    return knowledgeBaseSchema.parse(kb);
+  } catch (error) {
+    logger.error('Knowledge base validation failed:', error);
+    throw new ValidationError('Invalid knowledge base configuration');
+  }
 }

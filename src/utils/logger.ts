@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 interface LogEntry {
@@ -34,7 +35,6 @@ class Logger {
       this.logs.shift();
     }
 
-    // Console output in development
     if (import.meta.env.DEV) {
       console[level](message, data);
     }

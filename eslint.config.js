@@ -20,13 +20,10 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.es2020,
+        ...globals.node, // Add Node.js globals
         React: 'readonly',
         JSX: 'readonly'
       }
-    },
-    linterOptions: {
-      reportUnusedDisableDirectives: true,
-      noInlineConfig: true
     },
     plugins: {
       '@typescript-eslint': tseslint,

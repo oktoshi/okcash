@@ -1,4 +1,45 @@
 import { beforeAll, afterAll, afterEach, vi } from 'vitest';
+import { TextEncoder, TextDecoder } from 'util';
+import '@testing-library/jest-dom';
+
+// Mock Web APIs
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
+
+// Mock ResizeObserver
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
+
+// Mock IntersectionObserver
+global.IntersectionObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
+
+// Mock performance API
+global.performance = {
+  now: vi.fn(() => Date.now()),
+  mark: vi.fn(),
+  measure: vi.fn(),
+  getEntriesByName: vi.fn(),
+  clearMarks: vi.fn(),
+  clearMeasures: vi.fn()
+} as unknown as Performance;
+
+// Mock crypto API
+global.crypto = {
+  subtle: {
+    digest: vi.fn().mockResolvedValue(new ArrayBuffer(32))
+  },
+  getRandomValues: vi.fn().mockImplementation((arr) => {
+    return arr.map(() => Math.floor(Math.random() * 256));
+  }),
+  randomUUID: vi.fn(() => 'test-uuid')
+} as unknown as Crypto;
 
 // Mock environment variables
 beforeAll(() => {
@@ -10,6 +51,7 @@ beforeAll(() => {
 // Clear all mocks after each test
 afterEach(() => {
   vi.clearAllMocks();
+  vi.restoreAllMocks();
 });
 
 // Restore environment after all tests

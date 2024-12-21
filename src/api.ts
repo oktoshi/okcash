@@ -1,16 +1,18 @@
 import OpenAI from 'openai';
 import { config } from './config/env';
+import type { Message } from './types';
 import type { AIPersona } from './config/personas/types';
-import { calculateSimilarity } from './utils/textMatching';
-import { formatPersonaResponse } from './utils/personaFormatter';
-import { integrateKnowledge } from './utils/knowledgeIntegration';
+import { processMessages } from './utils/messageProcessor';
+import { formatResponse } from './utils/responseFormatter';
+import { findBestMatch, integrateKnowledge } from './utils/knowledgeIntegration';
 import { validateMessages } from './utils/validation';
 import { logger } from './utils/logger';
 import { analytics } from './utils/analytics';
 import { metrics } from './utils/metrics';
-import { sanitizeInput, validateContentSecurity } from './utils/security';
+import { RateLimiter } from './utils/rateLimit';
 
 const DEFAULT_MODEL = "cognitivecomputations/dolphin-mixtral-8x22b";
+const rateLimiter = RateLimiter.getInstance();
 
 const openai = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
@@ -22,99 +24,65 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true
 });
 
-async function findBestMatch(message: string, persona: AIPersona) {
-  const integrated = await integrateKnowledge(persona);
-  let bestMatch = null;
-  let highestSimilarity = 0;
-
-  for (const qa of integrated.qa) {
-    const similarity = calculateSimilarity(message, qa.question);
-    if (similarity > highestSimilarity && similarity > 0.25) {
-      bestMatch = qa;
-      highestSimilarity = similarity;
-    }
-  }
-
-  return bestMatch;
-}
-
-export async function sendMessage(messages: { role: string; content: string }[], persona: AIPersona) {
+export async function sendMessage(messages: Message[], persona: AIPersona): Promise<Message | undefined> {
+  const requestId = crypto.randomUUID();
+  
   try {
-    // Validate messages
+    metrics.recordMetric('message_request_start', 1);
+
+    if (!rateLimiter.checkLimit(requestId)) {
+      throw new Error('Rate limit exceeded');
+    }
+
     validateMessages(messages);
+    const processedMessages = processMessages(messages);
+    
+    // Get knowledge context
+    const integrated = await integrateKnowledge(persona);
+    const matchingQA = await findBestMatch(processedMessages[processedMessages.length - 1].content, persona);
 
-    const lastUserMessage = messages[messages.length - 1];
-    if (lastUserMessage.role === 'user') {
-      // Sanitize and validate input
-      const sanitizedContent = sanitizeInput(lastUserMessage.content);
-      if (!validateContentSecurity(sanitizedContent)) {
-        throw new Error('Invalid content detected');
-      }
-
-      // Start performance monitoring
-      metrics.recordMetric('message_request', 1);
-      const requestStart = performance.now();
-
-      const integrated = await integrateKnowledge(persona);
-      const matchingQA = await findBestMatch(sanitizedContent, persona);
-      
-      // Create system message with integrated knowledge
-      const systemMessage = `${persona.systemPrompt}
+    // Create system message with integrated knowledge
+    const systemMessage = {
+      role: 'system' as const,
+      content: `${persona.systemPrompt}
 
 KNOWLEDGE BASE INTEGRATION:
 1. Topics of Expertise: ${integrated.topics.join(', ')}
 2. Context-Specific Instructions: ${integrated.prompts.join(' ')}
 
+${matchingQA ? `VERIFIED KNOWLEDGE BASE ANSWER:
+Source: ${matchingQA.source}
+Category: ${matchingQA.category}
+Answer: "${matchingQA.answer}"` : ''}
+
 RESPONSE GUIDELINES:
 1. Primary Source: Always prioritize knowledge base answers when available
 2. Consistency: Maintain ${persona.name}'s personality and style
 3. Accuracy: Only use verified information from the knowledge base
-4. Fallback: Use general knowledge only when no knowledge base match exists`;
+4. Fallback: Use general knowledge only when no knowledge base match exists`
+    };
 
-      const updatedMessages = [
-        { role: 'system', content: systemMessage },
-        ...messages.map(m => ({ ...m, content: sanitizeInput(m.content) }))
-      ];
+    const completion = await openai.chat.completions.create({
+      model: persona.model || DEFAULT_MODEL,
+      messages: [systemMessage, ...processedMessages.map(m => ({ role: m.role, content: m.content }))]
+    });
 
-      if (matchingQA) {
-        const knowledgeBaseContext = `VERIFIED KNOWLEDGE BASE ANSWER:
-Source: ${matchingQA.source}
-Category: ${matchingQA.category}
-Answer: "${matchingQA.answer}"
+    const response = completion.choices[0].message;
+    if (!response?.content) return undefined;
 
-INSTRUCTIONS:
-1. Use this verified answer as your primary source
-2. Maintain your persona while delivering this information
-3. Do not add external information to this answer
-4. Present the information naturally in your style`;
+    const formattedResponse = formatResponse(
+      { id: crypto.randomUUID(), role: 'assistant', content: response.content },
+      persona
+    );
 
-        updatedMessages.splice(1, 0, { 
-          role: 'system', 
-          content: knowledgeBaseContext 
-        });
-      }
+    analytics.trackEvent('message_sent', {
+      persona: persona.name,
+      hasKnowledgeMatch: !!matchingQA,
+      requestId
+    });
 
-      const completion = await openai.chat.completions.create({
-        model: persona.model || DEFAULT_MODEL,
-        messages: updatedMessages
-      });
+    return formattedResponse;
 
-      const response = completion.choices[0].message;
-      if (response) {
-        response.content = formatPersonaResponse(response.content || '', persona);
-      }
-
-      // Record metrics and analytics
-      const requestDuration = performance.now() - requestStart;
-      metrics.recordMetric('message_response_time', requestDuration);
-      analytics.trackEvent('message_sent', {
-        persona: persona.name,
-        hasKnowledgeMatch: !!matchingQA,
-        duration: requestDuration
-      });
-
-      return response;
-    }
   } catch (error) {
     logger.error('Error in sendMessage:', error);
     throw error;

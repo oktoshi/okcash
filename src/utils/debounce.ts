@@ -1,18 +1,19 @@
-type AnyFunction = (...args: unknown[]) => unknown;
+type AnyFunction = (...args: any[]) => any;
 
 export function debounce<T extends AnyFunction>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
-  let timeout: ReturnType<typeof setTimeout> | null = null;
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-  return (...args: Parameters<T>) => {
-    if (timeout) {
-      clearTimeout(timeout);
+  return (...args: Parameters<T>): void => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
     }
-    timeout = setTimeout(() => {
+
+    timeoutId = setTimeout(() => {
       func(...args);
-      timeout = null;
+      timeoutId = null;
     }, wait);
   };
 }

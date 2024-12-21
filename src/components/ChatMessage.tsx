@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MessageSquare, Bot } from 'lucide-react';
 import { marked } from 'marked';
 import type { Message } from '../types';
@@ -71,7 +71,7 @@ export function ChatMessage({
             dangerouslySetInnerHTML={{ __html: htmlContent }}
           />
           {(isAnimating || isTyping) && (
-            <div className="typing-indicator">
+            <div className="typing-indicator" data-testid="typing-indicator">
               <span className="dot"></span>
               <span className="dot"></span>
               <span className="dot"></span>

@@ -1,5 +1,4 @@
 import { loadPersonas } from './loadPersonas';
-import type { AIPersona } from './types';
 
 // Load all personas
 const allPersonas = loadPersonas();

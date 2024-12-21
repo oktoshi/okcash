@@ -18,7 +18,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const { currentPersona, changePersona, availablePersonas } = usePersona();
   const chatFocus = useChatFocusProvider();
-  const { scrollContainerRef, messagesEndRef, handleContentUpdate, scrollToBottom } = 
+  const { scrollContainerRef, messagesEndRef, handleContentUpdate } = 
     useChatScroll({ messages, isTyping: isLoading });
 
   const handlePersonaChange = useCallback((personaKey: string) => {
