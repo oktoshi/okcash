@@ -36,62 +36,6 @@ const personaStyles: Record<string, PersonaStyle> = {
       // Add tech enthusiasm
       (content) => content.replace(/good|great/gi, 'insanely great')
     ]
-  },
-  satoshinakamoto: {
-    expressions: ['indeed', 'precisely', 'fundamentally'],
-    endPhrases: ['.', '...', '.'],
-    removals: [
-      /(\b|^)(I apologize|sorry)\b/gi,
-      /knowledge base|previous response|as an AI|AI assistant/gi
-    ],
-    formatters: [
-      // Add cryptographic references
-      (content) => content.replace(/secure/gi, 'cryptographically secure'),
-      // More formal tone
-      (content) => content.replace(/(?:^|[.!?]\s+)(\w)/g, (m) => m.toUpperCase())
-    ]
-  },
-  juliuscaesar: {
-    expressions: ['indeed', 'by Jupiter', 'by the gods'],
-    endPhrases: ['.', '!', '...'],
-    removals: [
-      /(\b|^)(I apologize|sorry)\b/gi,
-      /knowledge base|previous response|as an AI|AI assistant/gi
-    ],
-    formatters: [
-      // Add Latin phrases
-      (content) => content.replace(/certainly/gi, 'per aspera ad astra'),
-      // Imperial tone
-      (content) => content.replace(/(?:^|[.!?]\s+)(\w)/g, (m) => m.toUpperCase())
-    ]
-  },
-  markzuckerberg: {
-    expressions: ['interesting', 'exciting', 'meaningful'],
-    endPhrases: ['.', '!', '...'],
-    removals: [
-      /(\b|^)(I apologize|sorry)\b/gi,
-      /knowledge base|previous response|as an AI|AI assistant/gi
-    ],
-    formatters: [
-      // Add Meta/FB references
-      (content) => content.replace(/virtual|digital/gi, 'metaverse'),
-      // Corporate tone
-      (content) => content.replace(/good|great/gi, 'meaningful')
-    ]
-  },
-  stevejobs: {
-    expressions: ['incredible', 'amazing', 'magical'],
-    endPhrases: ['.', '!', '...'],
-    removals: [
-      /(\b|^)(I apologize|sorry)\b/gi,
-      /knowledge base|previous response|as an AI|AI assistant/gi
-    ],
-    formatters: [
-      // Add signature phrases
-      (content) => content.replace(/good|great/gi, 'insanely great'),
-      // Enthusiastic tone
-      (content) => content.replace(/amazing/gi, 'magical')
-    ]
   }
 };
 
@@ -114,7 +58,7 @@ export function formatPersonaResponse(content: string, persona: AIPersona): stri
   // Add emoticons for personas that use them
   if (style.emoticons && !style.emoticons.some(emote => formattedContent.includes(emote))) {
     const randomEmote = style.emoticons[Math.floor(Math.random() * style.emoticons.length)];
-    formattedContent += ` ${randomEmote}`;
+    formattedContent = `${formattedContent} ${randomEmote}`;
   }
 
   // Add expressions
@@ -128,7 +72,7 @@ export function formatPersonaResponse(content: string, persona: AIPersona): stri
   // Ensure proper ending
   if (!style.endPhrases.some(phrase => formattedContent.trim().endsWith(phrase))) {
     const randomEndPhrase = style.endPhrases[Math.floor(Math.random() * style.endPhrases.length)];
-    formattedContent += randomEndPhrase;
+    formattedContent = `${formattedContent.trim()}${randomEndPhrase}`;
   }
 
   return formattedContent;

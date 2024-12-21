@@ -6,8 +6,14 @@ import { validateMessages } from './validation';
 
 export function processMessage(message: Message): Message {
   try {
+    // Pre-process message
+    const processedMessage = {
+      ...message,
+      content: message.content.trim()
+    };
+
     // Validate message structure first
-    const [validatedMessage] = validateMessages([message]);
+    const [validatedMessage] = validateMessages([processedMessage]);
 
     // Sanitize and validate content
     const sanitizedContent = sanitizeInput(validatedMessage.content);
@@ -36,6 +42,7 @@ export function processMessage(message: Message): Message {
 
 export function processMessages(messages: Message[]): Message[] {
   try {
+    // Initial array validation
     if (!Array.isArray(messages)) {
       throw new ValidationError('Messages must be an array');
     }
@@ -49,7 +56,10 @@ export function processMessages(messages: Message[]): Message[] {
     }
 
     // Process each message individually
-    return messages.map(msg => processMessage(msg));
+    const processedMessages = messages.map(processMessage);
+
+    // Validate the entire conversation
+    return validateMessages(processedMessages);
   } catch (error) {
     logger.error('Error processing messages:', { error, messages });
     throw error instanceof ValidationError ? error : new ValidationError('Messages processing failed');

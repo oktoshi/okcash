@@ -7,7 +7,7 @@ import { ValidationError } from './errors';
 
 // Message validation schema
 const messageSchema = z.object({
-  id: z.string().min(1, 'Message ID is required'),
+  id: z.string().uuid('Invalid message ID'),
   role: z.enum(['user', 'assistant', 'system']),
   content: z.string()
     .min(1, 'Message cannot be empty')
@@ -55,12 +55,6 @@ export function validateMessages(messages: unknown): Message[] {
     
     if (!result.success) {
       throw new ValidationError(result.error.message);
-    }
-
-    // Additional validation for message sequence
-    const lastMessage = result.data[result.data.length - 1];
-    if (lastMessage.role !== 'user' && lastMessage.role !== 'system') {
-      throw new ValidationError('Last message must be from user or system');
     }
 
     return result.data;

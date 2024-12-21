@@ -70,6 +70,10 @@ const knowledge: KnowledgeBase = {
     ],
     technical: [
       {
+        question: "What is OK (Okcash)?",
+        answer: "$OK is a multichain, community-driven cryptocurrency that combines innovation, sustainability, AI, and decentralization. Originally launched in 2014, $OK has evolved into a cultural and technical icon, representing positivity, resilience, and progress in the blockchain space."
+      },
+      {
         question: "What consensus mechanism does Okcash use?",
         answer: "Okcash uses different consensus mechanisms, depending in the network it operates. This allows OK to be one of the most sustainable and eco-friendly cryptocurrencies."
       },

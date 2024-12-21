@@ -14,12 +14,18 @@ export function formatResponse(message: Message, persona: AIPersona): Message {
       throw new ValidationError('Can only format assistant messages');
     }
 
+    const formattedContent = formatPersonaResponse(message.content, persona);
+
+    if (!formattedContent) {
+      throw new ValidationError('Failed to format response content');
+    }
+
     return {
       ...message,
-      content: formatPersonaResponse(message.content, persona)
+      content: formattedContent
     };
   } catch (error) {
-    logger.error('Error formatting response:', error);
+    logger.error('Error formatting response:', { error, message });
     throw error instanceof ValidationError ? error : new ValidationError('Response formatting failed');
   }
 }
