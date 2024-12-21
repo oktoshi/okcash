@@ -1,18 +1,18 @@
-// Types for pattern configuration
-interface PatternConfig {
+import { logger } from './logger';
+
+interface Pattern {
   pattern: RegExp;
   weight: number;
 }
 
-interface TermWeights {
+interface TermWeight {
   [term: string]: number;
 }
 
-// Configuration store for dynamic patterns and weights
-export class TextMatchingConfig {
+class TextMatchingConfig {
   private static instance: TextMatchingConfig;
-  private patternConfigs: Map<string, PatternConfig[]> = new Map();
-  private termWeightConfigs: Map<string, TermWeights> = new Map();
+  private patternConfigs: Map<string, Pattern[]> = new Map();
+  private termWeightConfigs: Map<string, TermWeight> = new Map();
 
   private constructor() {}
 
@@ -23,38 +23,22 @@ export class TextMatchingConfig {
     return this.instance;
   }
 
-  addCategory(category: string, patterns: PatternConfig[], termWeights: TermWeights) {
+  addCategory(category: string, patterns: Pattern[], termWeights: TermWeight) {
     this.patternConfigs.set(category, patterns);
     this.termWeightConfigs.set(category, termWeights);
+    logger.debug('Added patterns for category', { category, patterns });
   }
 
-  getPatterns(category: string): PatternConfig[] {
+  getPatterns(category: string): Pattern[] {
     return this.patternConfigs.get(category) || [];
   }
 
-  getTermWeights(category: string): TermWeights {
+  getTermWeights(category: string): TermWeight {
     return this.termWeightConfigs.get(category) || {};
   }
 }
 
-// Initialize with default patterns for backward compatibility
-const config = TextMatchingConfig.getInstance();
-config.addCategory('staking', [
-  { pattern: /how (?:can|do|to) .* stake/i, weight: 0.4 },
-  { pattern: /(?:help|start|begin) .* stake/i, weight: 0.4 },
-  { pattern: /stake .* ok(?:cash)?/i, weight: 0.4 },
-  { pattern: /want to stake/i, weight: 0.3 },
-  { pattern: /staking .* ok(?:cash)?/i, weight: 0.4 }
-], {
-  stake: 0.4,
-  ok: 0.4,
-  okcash: 0.4,
-  help: 0.2,
-  start: 0.2,
-  how: 0.2
-});
-
-// Calculates similarity score between two strings with category context
+// Calculate similarity between two strings
 export function calculateSimilarity(str1: string, str2: string, category?: string): number {
   const s1 = normalizeText(str1);
   const s2 = normalizeText(str2);
@@ -68,7 +52,24 @@ export function calculateSimilarity(str1: string, str2: string, category?: strin
   return Math.min(1, termOverlap + intentScore);
 }
 
+// Extract key terms from text
+export function extractKeyTerms(text: string): string[] {
+  const normalized = normalizeText(text);
+  return normalized
+    .split(/\s+/)
+    .filter(term => term.length > 1 && !stopWords.has(term));
+}
+
+// Private helper functions
+function normalizeText(text: string): string {
+  return text.toLowerCase()
+    .replace(/[.,?!]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function calculateTermOverlap(terms1: string[], terms2: string[], category?: string): number {
+  const config = TextMatchingConfig.getInstance();
   let matchCount = 0;
   let totalWeight = 0;
   
@@ -95,9 +96,8 @@ function calculateTermOverlap(terms1: string[], terms2: string[], category?: str
 }
 
 function calculateIntentMatch(s1: string, s2: string, category?: string): number {
-  const patterns = category ? 
-    config.getPatterns(category) : 
-    [];
+  const config = TextMatchingConfig.getInstance();
+  const patterns = category ? config.getPatterns(category) : [];
   
   let score = 0;
   for (const { pattern, weight } of patterns) {
@@ -109,23 +109,6 @@ function calculateIntentMatch(s1: string, s2: string, category?: string): number
   return Math.min(0.6, score);
 }
 
-// Normalize text for consistent matching
-function normalizeText(text: string): string {
-  return text.toLowerCase()
-    .replace(/[.,?!]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-// Extract key terms from text
-export function extractKeyTerms(text: string): string[] {
-  const normalized = normalizeText(text);
-  return normalized
-    .split(/\s+/)
-    .filter(term => term.length > 1 && !stopWords.has(term));
-}
-
-// Calculate Levenshtein distance for fuzzy matching
 function levenshteinDistance(s1: string, s2: string): number {
   if (s1.length < s2.length) [s1, s2] = [s2, s1];
   
@@ -149,5 +132,11 @@ function levenshteinDistance(s1: string, s2: string): number {
   return row[s2.length];
 }
 
-// Common stop words to filter out
-const stopWords = new Set([/* ... existing stop words ... */]);
+// Common English stop words
+const stopWords = new Set([
+  'a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'for',
+  'from', 'has', 'he', 'in', 'is', 'it', 'its', 'of', 'on',
+  'that', 'the', 'to', 'was', 'were', 'will', 'with'
+]);
+
+export const textMatchingConfig = TextMatchingConfig.getInstance();

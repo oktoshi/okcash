@@ -5,7 +5,6 @@ export default {
     extend: {},
   },
   plugins: [
-    // @ts-expect-error - tailwindcss plugin types
     require('@tailwindcss/typography'),
   ],
 };

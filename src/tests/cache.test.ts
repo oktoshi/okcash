@@ -1,4 +1,4 @@
-import { describe, test, expect, vi } from 'vitest';
+import { describe, test, expect, beforeEach } from 'vitest';
 import { cache } from '../utils/cache';
 
 describe('cache', () => {
@@ -12,15 +12,18 @@ describe('cache', () => {
   });
 
   test('handles cache expiration', () => {
-    vi.useFakeTimers();
-    cache.set('key', 'value', { maxAge: 1000 });
+    const now = Date.now();
+    const futureTime = now + 1500;
     
+    cache.set('key', 'value', { maxAge: 1000 });
     expect(cache.get('key')).toBe('value');
     
-    vi.advanceTimersByTime(1500);
+    // Simulate time passing
+    Date.now = () => futureTime;
     expect(cache.get('key')).toBeNull();
     
-    vi.useRealTimers();
+    // Restore Date.now
+    Date.now = () => now;
   });
 
   test('checks existence of keys', () => {

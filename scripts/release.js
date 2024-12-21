@@ -42,9 +42,8 @@ function buildProject() {
   execSync('npm run build', { stdio: 'inherit' });
 }
 
-// Use global process from Node.js environment
-/* global process */
 function main() {
+  // @ts-expect-error - Node.js process
   const type = process.argv[2];
   
   if (!TYPES[type]) {
@@ -57,19 +56,21 @@ function main() {
     generateChangelog();
     createGitTag(newVersion);
     
-    // Use logger instead of console
-    const logger = {
-      info: (msg) => process.stdout.write(`${msg}\n`)
-    };
+    // Use stdout/stderr directly
+    const messages = [
+      '\nRelease completed successfully!',
+      `\nVersion: v${newVersion}`,
+      '\nNext steps:',
+      '1. Push changes: git push origin main',
+      `2. Push tag: git push origin v${newVersion}`,
+      '3. Create GitHub release with the generated changelog'
+    ];
     
-    logger.info('\nRelease completed successfully!');
-    logger.info(`\nVersion: v${newVersion}`);
-    logger.info('\nNext steps:');
-    logger.info('1. Push changes: git push origin main');
-    logger.info(`2. Push tag: git push origin v${newVersion}`);
-    logger.info('3. Create GitHub release with the generated changelog');
+    // @ts-expect-error - Node.js process
+    messages.forEach(msg => process.stdout.write(`${msg}\n`));
     
   } catch (error) {
+    // @ts-expect-error - Node.js process
     process.stderr.write(`Release failed: ${error}\n`);
     throw error;
   }

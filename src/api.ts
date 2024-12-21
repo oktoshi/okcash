@@ -7,7 +7,6 @@ import { integrateKnowledge } from './utils/knowledgeIntegration';
 import { validateMessages } from './utils/validation';
 import { logger } from './utils/logger';
 import { analytics } from './utils/analytics';
-import { cache } from './utils/cache';
 import { metrics } from './utils/metrics';
 import { sanitizeInput, validateContentSecurity } from './utils/security';
 
@@ -23,8 +22,8 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true
 });
 
-function findBestMatch(message: string, persona: AIPersona) {
-  const integrated = integrateKnowledge(persona);
+async function findBestMatch(message: string, persona: AIPersona) {
+  const integrated = await integrateKnowledge(persona);
   let bestMatch = null;
   let highestSimilarity = 0;
 
@@ -56,8 +55,8 @@ export async function sendMessage(messages: { role: string; content: string }[],
       metrics.recordMetric('message_request', 1);
       const requestStart = performance.now();
 
-      const integrated = integrateKnowledge(persona);
-      const matchingQA = findBestMatch(sanitizedContent, persona);
+      const integrated = await integrateKnowledge(persona);
+      const matchingQA = await findBestMatch(sanitizedContent, persona);
       
       // Create system message with integrated knowledge
       const systemMessage = `${persona.systemPrompt}

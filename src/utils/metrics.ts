@@ -1,4 +1,3 @@
-import { monitor } from './monitoring';
 import { logger } from './logger';
 
 interface MetricPoint {

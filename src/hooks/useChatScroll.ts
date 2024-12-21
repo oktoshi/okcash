@@ -1,8 +1,9 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { debounce } from '../utils/debounce';
+import type { Message } from '../types';
 
 interface UseChatScrollProps {
-  messages: Array<unknown>;
+  messages: Message[];
   isTyping: boolean;
 }
 
@@ -57,7 +58,7 @@ export function useChatScroll({ messages }: UseChatScrollProps) {
   useEffect(() => {
     if (messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
-      if (lastMessage && 'role' in lastMessage && lastMessage.role === 'user') {
+      if (lastMessage.role === 'user') {
         // Always scroll to bottom for user messages
         isNearBottomRef.current = true;
         scrollToBottom('auto');

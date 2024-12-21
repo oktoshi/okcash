@@ -13,7 +13,7 @@ interface IntegratedKnowledge {
   }[];
 }
 
-export function integrateKnowledge(persona: AIPersona): IntegratedKnowledge {
+export async function integrateKnowledge(persona: AIPersona): Promise<IntegratedKnowledge> {
   const integrated: IntegratedKnowledge = {
     topics: [],
     prompts: [],
