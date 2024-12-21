@@ -9,17 +9,22 @@ import { logger } from './utils/logger';
 import { analytics } from './utils/analytics';
 import { metrics } from './utils/metrics';
 import { RateLimiter } from './utils/rateLimit';
-import { ValidationError } from './utils/errors';
+import { ValidationError, APIError } from './utils/errors';
 
 const DEFAULT_MODEL = "cognitivecomputations/dolphin-mixtral-8x22b";
 const rateLimiter = RateLimiter.getInstance();
+
+// Validate API key before creating client
+if (!config.openRouterApiKey) {
+  throw new Error('OpenRouter API key is required. Please add VITE_OPENROUTER_API_KEY to your .env file.');
+}
 
 const openai = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
   apiKey: config.openRouterApiKey,
   defaultHeaders: {
-    "HTTP-Referer": config.siteUrl,
-    "X-Title": config.appName,
+    "HTTP-Referer": config.siteUrl || window.location.origin,
+    "X-Title": config.appName || 'OKai S',
   },
   dangerouslyAllowBrowser: true
 });
@@ -71,31 +76,40 @@ RESPONSE GUIDELINES:
 4. Fallback: Use general knowledge only when no knowledge base match exists`
     };
 
-    const completion = await openai.chat.completions.create({
-      model: persona.model || DEFAULT_MODEL,
-      messages: [systemMessage, ...processedMessages].map(m => ({
-        role: m.role,
-        content: m.content
-      }))
-    });
+    try {
+      const completion = await openai.chat.completions.create({
+        model: persona.model || DEFAULT_MODEL,
+        messages: [systemMessage, ...processedMessages].map(m => ({
+          role: m.role,
+          content: m.content
+        }))
+      });
 
-    const response = completion.choices[0].message;
-    if (!response?.content) {
-      throw new Error('No response content received');
+      const response = completion.choices[0].message;
+      if (!response?.content) {
+        throw new Error('No response content received');
+      }
+
+      const formattedResponse = formatResponse(
+        { id: crypto.randomUUID(), role: 'assistant', content: response.content },
+        persona
+      );
+
+      analytics.trackEvent('message_sent', {
+        persona: persona.name,
+        hasKnowledgeMatch: !!matchingQA,
+        requestId
+      });
+
+      return formattedResponse;
+
+    } catch (error: any) {
+      // Handle specific API errors
+      if (error.status === 401) {
+        throw new APIError('Invalid OpenRouter API key. Please check your configuration.', 401);
+      }
+      throw error;
     }
-
-    const formattedResponse = formatResponse(
-      { id: crypto.randomUUID(), role: 'assistant', content: response.content },
-      persona
-    );
-
-    analytics.trackEvent('message_sent', {
-      persona: persona.name,
-      hasKnowledgeMatch: !!matchingQA,
-      requestId
-    });
-
-    return formattedResponse;
 
   } catch (error) {
     logger.error('Error in sendMessage:', error);

@@ -11,16 +11,27 @@ export function sanitizeInput(input: string): string {
   try {
     if (!input) return '';
 
-    // Remove HTML tags and dangerous patterns
-    const sanitized = input
-      // Remove script tags and content
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      // Remove other HTML tags
+    // First pass: Remove dangerous HTML and scripts
+    let sanitized = input
+      // Remove complete script tags and their content
+      .replace(/<script[\s\S]*?<\/script>/gi, '')
+      // Remove dangerous HTML event attributes
+      .replace(/\son\w+\s*=\s*["'].*?["']/gi, '')
+      // Remove dangerous attributes and their content
+      .replace(/\s(href|src|style|formaction)\s*=\s*["'].*?["']/gi, '')
+      // Remove all remaining HTML tags
       .replace(/<[^>]*>/g, '')
-      // Remove dangerous keywords
-      .replace(/\b(script|javascript|eval|alert|vbscript|on\w+\s*=)\b/gi, '')
-      // Remove special characters except basic punctuation
-      .replace(/[^\w\s.,!?-]/g, ' ')
+      // Remove dangerous protocols
+      .replace(/javascript:|data:|vbscript:|file:/gi, '');
+
+    // Second pass: Multi-character sanitization
+    sanitized = sanitized
+      // Remove potential SQL injection characters
+      .replace(/['";`]/g, '')
+      // Remove potential command injection characters
+      .replace(/[&|$><`]/g, '')
+      // Remove unicode control characters
+      .replace(/[\u0000-\u001F\u007F-\u009F]/g, '')
       // Normalize whitespace
       .replace(/\s+/g, ' ')
       .trim();
@@ -38,21 +49,43 @@ export function sanitizeInput(input: string): string {
 export function validateContentSecurity(content: string): boolean {
   try {
     const maxLength = 4000;
-    const suspiciousPatterns = [
+    
+    // Comprehensive pattern matching for dangerous content
+    const dangerousPatterns = [
+      // Script injection
       /<script/i,
       /javascript:/i,
-      /data:/i,
+      /data:\s*\w+\/\w+\s*;/i,
       /vbscript:/i,
-      /on\w+=/i,
-      /eval\(/i,
-      /Function\(/i
+      /file:/i,
+      
+      // Event handlers
+      /\bon\w+\s*=/i,
+      
+      // JavaScript execution
+      /eval\s*\(/i,
+      /Function\s*\(/i,
+      /setTimeout\s*\(/i,
+      /setInterval\s*\(/i,
+      
+      // SQL injection
+      /'\s*(\-\-|#|\/\*)/i,
+      /;\s*DROP\s+TABLE/i,
+      
+      // Command injection
+      /\|\s*[\w\s\-]+/i,
+      /`[\w\s\-]+`/i,
+      
+      // Base64 data (potential obfuscation)
+      /base64.*[A-Za-z0-9+/=]{20,}/i
     ];
 
     if (!content || content.length > maxLength) {
       return false;
     }
 
-    return !suspiciousPatterns.some(pattern => pattern.test(content));
+    // Check for any dangerous patterns
+    return !dangerousPatterns.some(pattern => pattern.test(content));
   } catch (error) {
     logger.error('Error validating content security:', error);
     return false;

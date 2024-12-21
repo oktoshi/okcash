@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { ChatMessage } from './components/ChatMessage';
 import { ChatInput } from './components/ChatInput';
 import { PersonaSidebar } from './components/PersonaSidebar';
@@ -7,19 +7,29 @@ import { useChatFocusProvider, ChatFocusContext } from './hooks/useChatFocus';
 import { useKnowledgeReload } from './hooks/useKnowledgeReload';
 import { useChatScroll } from './hooks/useChatScroll';
 import { sendMessage } from './api';
-import { Github } from 'lucide-react';
+import { Github, AlertCircle } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import type { Message } from './types';
+import { APIError } from './utils/errors';
+import { config } from './config/env';
 
 export default function App() {
   useKnowledgeReload();
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [configError, setConfigError] = useState<string | null>(null);
   const { currentPersona, changePersona, availablePersonas } = usePersona();
   const chatFocus = useChatFocusProvider();
   const { scrollContainerRef, messagesEndRef, handleContentUpdate } = 
     useChatScroll({ messages, isTyping: isLoading });
+
+  // Check configuration on mount
+  useEffect(() => {
+    if (!config.openRouterApiKey) {
+      setConfigError('OpenRouter API key is missing. Please check your .env file configuration.');
+    }
+  }, []);
 
   const handlePersonaChange = useCallback((personaKey: string) => {
     changePersona(personaKey);
@@ -45,10 +55,17 @@ export default function App() {
       }
     } catch (error) {
       console.error('Error:', error);
+      let errorMessage = 'Sorry, there was an error processing your request.';
+      
+      if (error instanceof APIError && error.statusCode === 401) {
+        errorMessage = 'API key is invalid or missing. Please check your .env file configuration.';
+        setConfigError(errorMessage);
+      }
+      
       setMessages(prev => [...prev, {
         id: uuidv4(),
         role: 'assistant',
-        content: 'Sorry, there was an error processing your request.'
+        content: errorMessage
       }]);
     } finally {
       setIsLoading(false);
@@ -60,6 +77,12 @@ export default function App() {
       <div className="flex flex-col h-full bg-gray-900">
         <header className="flex-none p-4 border-b border-gray-800">
           <h1 className="text-xl font-bold text-white text-center">OKai S</h1>
+          {configError && (
+            <div className="mt-2 p-3 bg-red-900/50 border border-red-500 rounded-lg flex items-center gap-2 text-red-200">
+              <AlertCircle className="h-5 w-5 flex-shrink-0" />
+              <p className="text-sm">{configError}</p>
+            </div>
+          )}
         </header>
         
         <div className="flex flex-1 overflow-hidden">
@@ -95,7 +118,7 @@ export default function App() {
 
         <footer className="flex-none border-t border-gray-800">
           <div className="max-w-4xl mx-auto w-full">
-            <ChatInput onSend={handleSendMessage} disabled={isLoading} />
+            <ChatInput onSend={handleSendMessage} disabled={isLoading || !!configError} />
             <div className="px-4 pb-2 flex justify-between items-center text-xs text-gray-500">
               <span>
                 <a href="https://okai-s.github.io" className="hover:text-blue-400 transition-colors">OKai-S</a>
