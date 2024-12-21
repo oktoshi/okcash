@@ -14,4 +14,4 @@ if (!defaultPersona) {
 export const personas = {
   ...allPersonas,
   default: defaultPersona
-} as const;
+};

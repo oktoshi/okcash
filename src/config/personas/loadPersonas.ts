@@ -13,12 +13,6 @@ const mockPersonas = {
     description: 'Test persona',
     systemPrompt: 'Test prompt',
     displayOrder: 2
-  },
-  default: {
-    name: 'Okai',
-    description: 'Test persona',
-    systemPrompt: 'Test prompt',
-    knowledgeBases: ['okcash', 'anime']
   }
 } as Record<string, AIPersona>;
 

@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 
-// Force reload when knowledge bases or personas change
 export function useKnowledgeReload() {
   useEffect(() => {
     // Watch for changes in knowledge and persona files
@@ -9,17 +8,23 @@ export function useKnowledgeReload() {
     // Create a map to store module promises
     const modules = new Map();
     
+    // Load all modules
     Object.entries(knowledgeContext).forEach(([path, moduleLoader]) => {
       modules.set(path, moduleLoader());
     });
     
-    // Vite's hot module replacement
+    // Handle hot module replacement
     if (import.meta.hot) {
-      import.meta.hot.on('vite:beforeUpdate', () => {
-        // Clear module cache and reload the page
+      const handleUpdate = () => {
         modules.clear();
         window.location.reload();
-      });
+      };
+
+      import.meta.hot.on('vite:beforeUpdate', handleUpdate);
+      
+      return () => {
+        import.meta.hot?.off('vite:beforeUpdate', handleUpdate);
+      };
     }
   }, []);
 }
