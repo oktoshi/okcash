@@ -5,7 +5,13 @@ const mockKnowledgeBases = {
   okcash: {
     name: 'Okcash',
     topics: { basics: ['Test Topic'] },
-    prompts: { default: 'Test prompt' }
+    prompts: { default: 'Test prompt' },
+    sampleQA: {
+      basics: [{
+        question: 'How do I stake OK?',
+        answer: 'Test answer'
+      }]
+    }
   },
   anime: {
     name: 'Anime',

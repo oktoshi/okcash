@@ -24,7 +24,7 @@ export function validateContentSecurity(content: string): boolean {
   ];
 
   if (content.length > maxLength) {
-    return false;
+    throw new ValidationError('Content exceeds maximum length');
   }
 
   return !suspiciousPatterns.some(pattern => pattern.test(content));
