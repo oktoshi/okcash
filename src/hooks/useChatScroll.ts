@@ -31,12 +31,14 @@ export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
   );
 
   const scrollToBottom = useCallback(() => {
-    if (scrollContainerRef.current && messagesEndRef.current && isNearBottomRef.current) {
-      messagesEndRef.current.scrollIntoView({ 
-        behavior: 'auto' as const, 
-        block: 'end' as const 
-      });
-    }
+    requestAnimationFrame(() => {
+      if (scrollContainerRef.current && messagesEndRef.current && isNearBottomRef.current) {
+        messagesEndRef.current.scrollIntoView({ 
+          behavior: 'smooth' as const,
+          block: 'end' as const
+        });
+      }
+    });
   }, []);
 
   const handleContentUpdate = useCallback(() => {
