@@ -75,6 +75,10 @@ vi.stubGlobal('import.meta', {
     VITE_OPENROUTER_API_KEY: 'test-key',
     VITE_SITE_URL: 'http://localhost:5173',
     VITE_APP_NAME: 'OKai S Test'
+  },
+  hot: {
+    on: vi.fn(),
+    off: vi.fn()
   }
 });
 
