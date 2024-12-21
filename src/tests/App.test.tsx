@@ -1,3 +1,4 @@
+```typescript
 import { describe, test, expect, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -5,7 +6,14 @@ import App from '../App';
 import { sendMessage } from '../api';
 
 // Mock dependencies
-vi.mock('../api');
+vi.mock('../api', () => ({
+  sendMessage: vi.fn().mockResolvedValue({
+    id: '1',
+    role: 'assistant',
+    content: 'Test response'
+  })
+}));
+
 vi.mock('../utils/logger');
 vi.mock('../utils/metrics');
 vi.mock('../utils/analytics');
@@ -13,11 +21,6 @@ vi.mock('../utils/analytics');
 describe('App', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(sendMessage).mockResolvedValue({
-      id: '1',
-      role: 'assistant',
-      content: 'Test response'
-    });
   });
 
   test('renders chat interface', () => {
@@ -82,3 +85,4 @@ describe('App', () => {
     expect(screen.getByText(/Start a conversation with Elon Musk/)).toBeInTheDocument();
   });
 });
+```

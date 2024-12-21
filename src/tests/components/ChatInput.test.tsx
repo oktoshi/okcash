@@ -1,3 +1,4 @@
+```typescript
 import { describe, test, expect, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -52,13 +53,18 @@ describe('ChatInput', () => {
   });
 
   test('auto-focuses after response', async () => {
-    renderWithContext(true);
+    const { rerender } = renderWithContext(true);
     
     // Re-render with disabled false to simulate response received
-    renderWithContext(false);
+    rerender(
+      <ChatFocusContext.Provider value={{ inputRef: mockInputRef, focusInput: mockFocusInput }}>
+        <ChatInput onSend={mockOnSend} disabled={false} />
+      </ChatFocusContext.Provider>
+    );
     
     await waitFor(() => {
       expect(mockFocusInput).toHaveBeenCalled();
     });
   });
 });
+```

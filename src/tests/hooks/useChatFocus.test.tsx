@@ -1,3 +1,4 @@
+```typescript
 import { describe, test, expect, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { render } from '@testing-library/react';
@@ -24,31 +25,28 @@ describe('useChatFocus', () => {
   });
 
   test('throws when used outside provider', () => {
-    const { result } = renderHook(() => useChatFocus());
+    const TestComponent = () => {
+      useChatFocus();
+      return null;
+    };
+
+    const { result } = renderHook(() => <TestComponent />);
     expect(result.error).toEqual(Error('useChatFocus must be used within a ChatFocusProvider'));
   });
 
   test('provides context value to children', () => {
-    const TestProvider = ({ children }: { children: React.ReactNode }) => {
-      const context = useChatFocusProvider();
-      return (
-        <ChatFocusContext.Provider value={context}>
-          {children}
-        </ChatFocusContext.Provider>
-      );
-    };
-
     const TestChild = () => {
       const { focusInput } = useChatFocus();
       return <button onClick={focusInput}>Focus</button>;
     };
 
     const { getByText } = render(
-      <TestProvider>
+      <ChatFocusContext.Provider value={useChatFocusProvider()}>
         <TestChild />
-      </TestProvider>
+      </ChatFocusContext.Provider>
     );
 
     expect(getByText('Focus')).toBeInTheDocument();
   });
 });
+```

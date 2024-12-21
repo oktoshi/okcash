@@ -1,3 +1,4 @@
+```typescript
 import { describe, test, expect, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useKnowledgeReload } from '../../hooks/useKnowledgeReload';
@@ -77,3 +78,4 @@ describe('useKnowledgeReload', () => {
     expect(mockReload).toHaveBeenCalled();
   });
 });
+```
