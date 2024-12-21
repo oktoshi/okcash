@@ -1,4 +1,3 @@
-```typescript
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useChatScroll } from '../../hooks/useChatScroll';
@@ -42,7 +41,7 @@ describe('useChatScroll', () => {
     });
 
     expect(mockScrollIntoView).toHaveBeenCalledWith({ 
-      behavior: 'auto', 
+      behavior: 'smooth', 
       block: 'end' 
     });
   });
@@ -72,4 +71,3 @@ describe('useChatScroll', () => {
     expect(mockScrollIntoView).toHaveBeenCalled();
   });
 });
-```

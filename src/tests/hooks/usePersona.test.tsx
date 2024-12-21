@@ -1,9 +1,7 @@
-```typescript
 import { describe, test, expect } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { usePersona } from '../../hooks/usePersona';
 import { personas } from '../../config/personas';
-import { knowledgeBases } from '../../config/knowledge';
 
 describe('usePersona', () => {
   test('initializes with default persona', () => {
@@ -43,4 +41,3 @@ describe('usePersona', () => {
     expect(knowledge).toEqual(expect.arrayContaining(customKnowledge));
   });
 });
-```

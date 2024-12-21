@@ -1,4 +1,3 @@
-```typescript
 import { describe, test, expect, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { render } from '@testing-library/react';
@@ -49,4 +48,3 @@ describe('useChatFocus', () => {
     expect(getByText('Focus')).toBeInTheDocument();
   });
 });
-```
