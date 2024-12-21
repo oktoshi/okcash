@@ -9,23 +9,21 @@ import { ValidationError } from './errors';
  */
 export function sanitizeInput(input: string): string {
   try {
-    // Remove HTML tags
-    const withoutTags = input.replace(/<[^>]*>/g, '');
-    
-    // Remove dangerous keywords
-    const withoutDangerousWords = withoutTags.replace(
-      /script|javascript|eval|alert|vbscript|on\w+=/gi, 
-      ''
-    );
-    
-    // Replace multiple spaces with single space
-    const normalized = withoutDangerousWords.replace(/\s+/g, ' ');
-    
-    // Remove special characters except basic punctuation and spaces
-    const cleaned = normalized.replace(/[^\w\s.,!?-]/g, ' ');
-    
-    // Trim and normalize whitespace
-    return cleaned.trim().replace(/\s+/g, ' ');
+    if (!input) return '';
+
+    // Remove HTML tags and dangerous patterns
+    const sanitized = input
+      // Remove HTML tags
+      .replace(/<[^>]*>/g, '')
+      // Remove dangerous keywords
+      .replace(/\b(script|javascript|eval|alert|vbscript|on\w+\s*=)\b/gi, '')
+      // Remove special characters except basic punctuation
+      .replace(/[^\w\s.,!?-]/g, ' ')
+      // Normalize whitespace
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    return sanitized;
   } catch (error) {
     logger.error('Error sanitizing input:', error);
     throw new ValidationError('Input sanitization failed');

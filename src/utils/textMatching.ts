@@ -45,10 +45,23 @@ export class TextMatchingConfig {
   }
 }
 
+// Extract key terms from text
+export function extractKeyTerms(text: string): string[] {
+  const normalized = text.toLowerCase()
+    .replace(/[^\w\s]/g, ' ') // Remove special characters
+    .replace(/\s+/g, ' ')     // Normalize whitespace
+    .trim();
+
+  return normalized
+    .split(/\s+/)
+    .filter(term => term.length > 1 && !stopWords.has(term))
+    .map(term => term.toLowerCase());
+}
+
 // Calculate similarity between two strings
 export function calculateSimilarity(str1: string, str2: string, category?: string): number {
-  const s1 = normalizeText(str1);
-  const s2 = normalizeText(str2);
+  const s1 = str1.toLowerCase();
+  const s2 = str2.toLowerCase();
   
   const terms1 = extractKeyTerms(s1);
   const terms2 = extractKeyTerms(s2);
@@ -59,22 +72,7 @@ export function calculateSimilarity(str1: string, str2: string, category?: strin
   return Math.min(1, termOverlap + intentScore);
 }
 
-// Extract key terms from text
-export function extractKeyTerms(text: string): string[] {
-  const normalized = normalizeText(text);
-  return normalized
-    .split(/\s+/)
-    .filter(term => term.length > 1 && !stopWords.has(term.toLowerCase()));
-}
-
 // Private helper functions
-function normalizeText(text: string): string {
-  return text.toLowerCase()
-    .replace(/[.,?!]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
 function calculateTermOverlap(terms1: string[], terms2: string[], category?: string): number {
   const config = TextMatchingConfig.getInstance();
   let matchCount = 0;
