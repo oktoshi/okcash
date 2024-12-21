@@ -24,9 +24,7 @@ export function useKnowledgeReload() {
       
       // Cleanup
       return () => {
-        if (import.meta.hot?.off) {
-          import.meta.hot.off('vite:beforeUpdate', handleUpdate);
-        }
+        import.meta.hot?.off('vite:beforeUpdate', handleUpdate);
       };
     }
   }, []);

@@ -21,29 +21,23 @@ export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
     isNearBottomRef.current = position < threshold;
   }, []);
 
-  const handleScroll = useCallback(() => {
-    checkIfNearBottom();
-  }, [checkIfNearBottom]);
-
-  const debouncedScroll = useCallback(
-    debounce(handleScroll, 100),
-    [handleScroll]
-  );
-
-  const scrollToBottom = useCallback(() => {
+  const scrollToBottom = useCallback((behavior: ScrollBehavior = 'smooth') => {
     requestAnimationFrame(() => {
       if (scrollContainerRef.current && messagesEndRef.current && isNearBottomRef.current) {
-        messagesEndRef.current.scrollIntoView({ 
-          behavior: 'smooth' as const,
-          block: 'end' as const
-        });
+        messagesEndRef.current.scrollIntoView({ behavior, block: 'end' });
       }
     });
   }, []);
 
+  const handleScroll = useCallback(() => {
+    checkIfNearBottom();
+  }, [checkIfNearBottom]);
+
+  const debouncedScroll = debounce(handleScroll, 100);
+
   const handleContentUpdate = useCallback(() => {
     if (isNearBottomRef.current) {
-      scrollToBottom();
+      scrollToBottom('auto');
     }
   }, [scrollToBottom]);
 
@@ -60,7 +54,7 @@ export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
       const lastMessage = messages[messages.length - 1];
       if (lastMessage?.role === 'user' || isTyping) {
         isNearBottomRef.current = true;
-        scrollToBottom();
+        scrollToBottom('auto');
       }
     }
   }, [messages, isTyping, scrollToBottom]);

@@ -19,7 +19,7 @@ export function sanitizeInput(input: string): string {
       .replace(/\b(script|javascript|eval|alert|vbscript|on\w+\s*=)\b/gi, '')
       // Remove special characters except basic punctuation
       .replace(/[^\w\s.,!?-]/g, ' ')
-      // Normalize whitespace
+      // Normalize whitespace (collapse multiple spaces to single space)
       .replace(/\s+/g, ' ')
       .trim();
 
@@ -55,20 +55,4 @@ export function validateContentSecurity(content: string): boolean {
     logger.error('Error validating content security:', error);
     return false;
   }
-}
-
-/**
- * Validates JWT format (without verification)
- */
-export function validateToken(token: string): boolean {
-  return /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/.test(token);
-}
-
-/**
- * Generates secure random ID
- */
-export function generateSecureId(length: number = 32): string {
-  const array = new Uint8Array(length);
-  crypto.getRandomValues(array);
-  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 }

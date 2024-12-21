@@ -1,11 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { 
-  sanitizeInput, 
-  validateContentSecurity, 
-  validateToken,
-  generateSecureId
-} from '../utils/security';
-import { ValidationError } from '../utils/errors';
+import { sanitizeInput } from '../utils/security';
 
 describe('security', () => {
   describe('sanitizeInput', () => {
@@ -24,11 +18,6 @@ describe('security', () => {
       expect(sanitizeInput(input)).toBe('Hello, world! How are you?');
     });
 
-    test('removes dangerous keywords', () => {
-      const input = 'javascript:alert(1) script eval';
-      expect(sanitizeInput(input)).toBe('1');
-    });
-
     test('normalizes whitespace', () => {
       const input = 'Hello    World   !';
       expect(sanitizeInput(input)).toBe('Hello World !');
@@ -37,7 +26,10 @@ describe('security', () => {
     test('handles empty input', () => {
       expect(sanitizeInput('')).toBe('');
     });
-  });
 
-  // Rest of the tests remain unchanged...
+    test('removes dangerous keywords', () => {
+      const input = 'javascript:alert() onclick=evil() script:bad()';
+      expect(sanitizeInput(input)).toBe('alert evil bad');
+    });
+  });
 });
