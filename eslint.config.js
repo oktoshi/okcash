@@ -20,9 +20,18 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.es2020,
-        ...globals.node, // Add Node.js globals
+        ...globals.node,
         React: 'readonly',
-        JSX: 'readonly'
+        JSX: 'readonly',
+        vi: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly'
       }
     },
     plugins: {

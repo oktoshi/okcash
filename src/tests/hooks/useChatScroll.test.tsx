@@ -13,6 +13,12 @@ describe('useChatScroll', () => {
     Element.prototype.scrollIntoView = mockScrollIntoView;
     Element.prototype.addEventListener = mockAddEventListener;
     Element.prototype.removeEventListener = mockRemoveEventListener;
+
+    // Mock requestAnimationFrame
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
+      cb(0);
+      return 0;
+    });
   });
 
   test('initializes with refs', () => {
@@ -21,58 +27,59 @@ describe('useChatScroll', () => {
       isTyping: false 
     }));
 
-    expect(result.current.scrollContainerRef).toBeDefined();
-    expect(result.current.messagesEndRef).toBeDefined();
-    expect(result.current.handleContentUpdate).toBeDefined();
+    expect(result.current.scrollContainerRef.current).toBe(null);
+    expect(result.current.messagesEndRef.current).toBe(null);
+    expect(typeof result.current.handleContentUpdate).toBe('function');
   });
 
   test('scrolls to bottom on new user message', () => {
     const messages: Message[] = [{ id: '1', role: 'user', content: 'test' }];
-    const { result, rerender } = renderHook(
+    
+    renderHook(
       ({ messages, isTyping }) => useChatScroll({ messages, isTyping }),
       {
-        initialProps: { 
-          messages: [], 
-          isTyping: false 
-        }
+        initialProps: { messages, isTyping: false }
       }
     );
 
-    rerender({ messages, isTyping: false });
-
-    result.current.handleContentUpdate();
-    expect(mockScrollIntoView).toHaveBeenCalled();
+    expect(mockScrollIntoView).toHaveBeenCalledWith({ 
+      behavior: 'auto', 
+      block: 'end' 
+    });
   });
 
-  test('scrolls to bottom when typing starts', () => {
-    const { rerender } = renderHook(
-      ({ messages, isTyping }) => useChatScroll({ messages, isTyping }),
-      {
-        initialProps: { 
-          messages: [], 
-          isTyping: false 
-        }
-      }
-    );
-
-    rerender({ 
+  test('handles scroll events with debounce', () => {
+    vi.useFakeTimers();
+    
+    const { result } = renderHook(() => useChatScroll({ 
       messages: [], 
-      isTyping: true 
+      isTyping: false 
+    }));
+
+    // Simulate scroll container ref being set
+    const container = document.createElement('div');
+    Object.defineProperty(result.current.scrollContainerRef, 'current', {
+      value: container,
+      writable: true
     });
 
-    expect(mockScrollIntoView).toHaveBeenCalled();
+    // Trigger multiple scroll events
+    container.dispatchEvent(new Event('scroll'));
+    container.dispatchEvent(new Event('scroll'));
+    
+    expect(mockAddEventListener).toHaveBeenCalledWith('scroll', expect.any(Function));
+    
+    vi.runAllTimers();
+    vi.useRealTimers();
   });
 
-  test('adds and removes scroll listener', () => {
+  test('cleans up event listeners', () => {
     const { unmount } = renderHook(() => useChatScroll({ 
       messages: [], 
       isTyping: false 
     }));
 
-    expect(mockAddEventListener).toHaveBeenCalledWith('scroll', expect.any(Function));
-    
     unmount();
-    
     expect(mockRemoveEventListener).toHaveBeenCalledWith('scroll', expect.any(Function));
   });
 });

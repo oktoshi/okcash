@@ -1,12 +1,12 @@
 {
   "name": "okai-s",
   "private": true,
-  "version": "1.0.1-beta",
+  "version": "1.0.2-beta",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "preview": "vite preview",
     "release": "node scripts/release.js",
     "changelog": "node scripts/changelog.js",

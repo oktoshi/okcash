@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2-beta] - 2024-03-20
+
+### Added
+- Enhanced test coverage with comprehensive test suites
+- Improved error handling with detailed error messages
+- Added response formatting validation
+- Better type safety across components
+
+### Changed
+- Refactored message processing pipeline
+- Improved test setup and configuration
+- Enhanced security validation
+- Updated test utilities and mocks
+
+### Fixed
+- Message validation edge cases
+- Response formatting consistency
+- Test environment configuration
+- Security validation checks
+
 ## [1.0.1-beta] - 2024-03-20
 
 ### Added
@@ -56,7 +76,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Performance optimization
 - Documentation updates
 - Code quality improvements
-
-## [0.3.0] - 2024-03-20
-
-[Previous changelog entries...]

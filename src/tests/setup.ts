@@ -2,9 +2,14 @@ import { beforeAll, afterAll, afterEach, vi } from 'vitest';
 import { TextEncoder, TextDecoder } from 'util';
 import '@testing-library/jest-dom/vitest';
 
-// Add type support for jest-dom
+// Add type support for testing-library jest-dom
 declare module 'vitest' {
-  interface JestAssertion<T = any> extends jest.Matchers<void, T> {}
+  interface Assertion<T> {
+    toBeInTheDocument(): T;
+    toHaveStyle(style: Record<string, string>): T;
+    toHaveValue(value: string | number): T;
+    toBeDisabled(): T;
+  }
 }
 
 // Mock Web APIs

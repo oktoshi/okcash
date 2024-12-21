@@ -17,7 +17,8 @@ export default defineConfig({
         'src/tests/',
         '**/*.d.ts',
         '**/*.config.*',
-        '**/index.ts'
+        '**/index.ts',
+        'src/vite-env.d.ts'
       ]
     }
   },
