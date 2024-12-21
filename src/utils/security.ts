@@ -4,6 +4,7 @@
 import { logger } from './logger';
 import { ValidationError } from './errors';
 import { removeControlCharacters } from './characterSanitizer';
+import DOMPurify from 'dompurify';
 
 /**
  * Sanitizes user input by removing potentially dangerous content
@@ -12,33 +13,15 @@ export function sanitizeInput(input: string): string {
   try {
     if (!input) return '';
 
-    // First pass: Remove dangerous HTML and scripts
-    let sanitized = input;
-    let previous;
-    do {
-      previous = sanitized;
-      sanitized = sanitized
-        // Remove complete script tags and their content
-        .replace(/<script[\s\S]*?<\/script>/gi, '')
-        // Remove dangerous HTML event attributes
-        .replace(/\son\w+\s*=\s*["'].*?["']/gi, '')
-        // Remove dangerous attributes and their content
-        .replace(/\s(href|src|style|formaction)\s*=\s*["'].*?["']/gi, '')
-        // Remove all remaining HTML tags
-        .replace(/<[^>]*>/g, '')
-        // Remove dangerous protocols
-        .replace(/javascript:|data:|vbscript:|file:/gi, '');
-    } while (sanitized !== previous);
+    // Use DOMPurify to sanitize input
+    let sanitized = DOMPurify.sanitize(input);
 
     // Second pass: Multi-character sanitization
-    do {
-      previous = sanitized;
-      sanitized = sanitized
-        // Remove potential SQL injection characters
-        .replace(/['";`]/g, '')
-        // Remove potential command injection characters
-        .replace(/[&|$><`]/g, '');
-    } while (sanitized !== previous);
+    sanitized = sanitized
+      // Remove potential SQL injection characters
+      .replace(/['";`]/g, '')
+      // Remove potential command injection characters
+      .replace(/[&|$><`]/g, '');
 
     // Remove control characters using dedicated utility
     sanitized = removeControlCharacters(sanitized);
