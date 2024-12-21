@@ -1,5 +1,5 @@
 import { describe, test, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { ChatMessage } from '../../components/ChatMessage';
 
 describe('ChatMessage', () => {
@@ -21,7 +21,9 @@ describe('ChatMessage', () => {
         shouldAnimate={true}
       />
     );
-    expect(screen.getByText('Bold')).toHaveStyle('font-weight: bold');
+    const element = screen.getByText(/Bold/);
+    expect(element).toBeInTheDocument();
+    expect(element.tagName.toLowerCase()).toBe('strong');
   });
 
   test('shows typing indicator when typing', () => {
@@ -34,8 +36,9 @@ describe('ChatMessage', () => {
     expect(screen.getByTestId('typing-indicator')).toBeInTheDocument();
   });
 
-  test('handles animation completion', () => {
+  test('handles animation completion', async () => {
     const onComplete = vi.fn();
+    
     render(
       <ChatMessage
         message={{ id: '1', role: 'assistant', content: 'Test' }}
@@ -43,6 +46,10 @@ describe('ChatMessage', () => {
         onAnimationComplete={onComplete}
       />
     );
-    expect(onComplete).toHaveBeenCalled();
+
+    // Wait for animation to complete
+    await vi.waitFor(() => {
+      expect(onComplete).toHaveBeenCalled();
+    });
   });
 });

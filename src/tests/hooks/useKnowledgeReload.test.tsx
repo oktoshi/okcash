@@ -25,9 +25,10 @@ describe('useKnowledgeReload', () => {
     };
 
     vi.stubGlobal('import.meta', { 
-      ...import.meta,
       hot: mockHot,
-      glob: () => ({})
+      glob: () => ({
+        '../config/{knowledge,personas}/**/*.ts': {}
+      })
     });
 
     const { unmount } = renderHook(() => useKnowledgeReload());
@@ -43,7 +44,6 @@ describe('useKnowledgeReload', () => {
 
   test('handles missing hot reload', () => {
     vi.stubGlobal('import.meta', {
-      ...import.meta,
       hot: undefined,
       glob: () => ({})
     });
@@ -60,16 +60,20 @@ describe('useKnowledgeReload', () => {
     };
 
     vi.stubGlobal('import.meta', { 
-      ...import.meta,
       hot: mockHot,
-      glob: () => ({})
+      glob: () => ({
+        '../config/{knowledge,personas}/**/*.ts': {
+          './knowledge/test.ts': () => Promise.resolve({ default: {} })
+        }
+      })
     });
 
     renderHook(() => useKnowledgeReload());
-    
+
+    // Get the callback passed to hot.on
     const callback = mockOn.mock.calls[0][1];
     callback();
-    
+
     expect(mockReload).toHaveBeenCalled();
   });
 });

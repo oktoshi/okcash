@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, Bot } from 'lucide-react';
 import { marked } from 'marked';
 import type { Message } from '../types';
@@ -21,10 +21,12 @@ export function ChatMessage({
   const isUser = message.role === 'user';
   const [displayedContent, setDisplayedContent] = useState('');
   const [isAnimating, setIsAnimating] = useState(false);
+  const animationRef = useRef<number>();
   
   useEffect(() => {
     if (isUser || !shouldAnimate) {
       setDisplayedContent(message.content);
+      onAnimationComplete?.();
       return;
     }
 
@@ -39,16 +41,19 @@ export function ChatMessage({
         setDisplayedContent(currentText);
         onContentUpdate?.();
         currentIndex++;
-        requestAnimationFrame(typeNextWord);
+        animationRef.current = requestAnimationFrame(typeNextWord);
       } else {
         setIsAnimating(false);
         onAnimationComplete?.();
       }
     };
 
-    requestAnimationFrame(typeNextWord);
+    animationRef.current = requestAnimationFrame(typeNextWord);
 
     return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
       setIsAnimating(false);
     };
   }, [isUser, message.content, shouldAnimate, onContentUpdate, onAnimationComplete]);
