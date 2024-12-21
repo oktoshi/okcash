@@ -32,9 +32,10 @@ export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
 
   const scrollToBottom = useCallback(() => {
     if (scrollContainerRef.current && messagesEndRef.current && isNearBottomRef.current) {
-      const behavior: ScrollBehavior = 'auto';
-      const block: ScrollLogicalPosition = 'end';
-      messagesEndRef.current.scrollIntoView({ behavior, block });
+      messagesEndRef.current.scrollIntoView({ 
+        behavior: 'auto' as const, 
+        block: 'end' as const 
+      });
     }
   }, []);
 
