@@ -1,4 +1,3 @@
-```typescript
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { sendMessage } from '../api';
 import { personas } from '../config/personas';
@@ -74,4 +73,3 @@ describe('sendMessage', () => {
     expect(response?.content).not.toContain('<script>');
   });
 });
-```

@@ -1,4 +1,3 @@
-```typescript
 import { describe, test, expect } from 'vitest';
 import { 
   sanitizeInput, 
@@ -78,4 +77,3 @@ describe('security', () => {
     });
   });
 });
-```

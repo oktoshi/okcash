@@ -1,4 +1,3 @@
-```typescript
 import { describe, test, expect } from 'vitest';
 import { calculateSimilarity, extractKeyTerms } from '../utils/textMatching';
 
@@ -56,4 +55,3 @@ describe('textMatching', () => {
     });
   });
 });
-```
