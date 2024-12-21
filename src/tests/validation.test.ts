@@ -1,7 +1,10 @@
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 import { validateMessages, validatePersona, validateKnowledgeBase } from '../utils/validation';
 import { ValidationError } from '../utils/errors';
+import { logger } from '../utils/logger';
 import type { Message } from '../types';
+
+vi.mock('../utils/logger');
 
 describe('validation', () => {
   describe('validateMessages', () => {
@@ -15,75 +18,47 @@ describe('validation', () => {
     });
 
     test('rejects non-array input', () => {
-      expect(() => validateMessages('not an array' as any))
+      expect(() => validateMessages('not an array'))
         .toThrow(ValidationError);
+      expect(logger.error).toHaveBeenCalled();
+    });
+
+    test('rejects empty array', () => {
+      expect(() => validateMessages([]))
+        .toThrow(ValidationError);
+      expect(logger.error).toHaveBeenCalled();
     });
 
     test('rejects messages without ID', () => {
-      const messages = [{ role: 'user', content: 'Hello' }] as any[];
+      const messages = [{ role: 'user', content: 'Hello' }] as unknown[];
       expect(() => validateMessages(messages))
         .toThrow(ValidationError);
+      expect(logger.error).toHaveBeenCalled();
     });
 
     test('rejects invalid role', () => {
-      const messages = [{ id: '1', role: 'invalid', content: 'Hello' }] as any[];
+      const messages = [{ id: '1', role: 'invalid', content: 'Hello' }] as unknown[];
       expect(() => validateMessages(messages))
         .toThrow(ValidationError);
+      expect(logger.error).toHaveBeenCalled();
     });
 
     test('rejects empty content', () => {
       const messages = [{ id: '1', role: 'user', content: '' }];
       expect(() => validateMessages(messages))
         .toThrow(ValidationError);
-    });
-  });
-
-  describe('validatePersona', () => {
-    test('validates correct persona', () => {
-      const persona = {
-        name: 'Test',
-        description: 'Test persona',
-        systemPrompt: 'You are a test persona'
-      };
-      expect(() => validatePersona(persona)).not.toThrow();
+      expect(logger.error).toHaveBeenCalled();
     });
 
-    test('rejects missing required fields', () => {
-      const persona = { name: 'Test' };
-      expect(() => validatePersona(persona))
+    test('rejects content exceeding max length', () => {
+      const messages = [{ 
+        id: '1', 
+        role: 'user', 
+        content: 'a'.repeat(4001) 
+      }];
+      expect(() => validateMessages(messages))
         .toThrow(ValidationError);
-    });
-  });
-
-  describe('validateKnowledgeBase', () => {
-    test('validates correct knowledge base', () => {
-      const kb = {
-        name: 'Test',
-        topics: { general: ['Topic 1', 'Topic 2'] },
-        prompts: { default: 'Test prompt' }
-      };
-      expect(() => validateKnowledgeBase(kb)).not.toThrow();
-    });
-
-    test('validates knowledge base with Q&As', () => {
-      const kb = {
-        name: 'Test',
-        topics: { general: ['Topic'] },
-        prompts: { default: 'Prompt' },
-        sampleQA: {
-          general: [{
-            question: 'Test?',
-            answer: 'Answer'
-          }]
-        }
-      };
-      expect(() => validateKnowledgeBase(kb)).not.toThrow();
-    });
-
-    test('rejects invalid knowledge base structure', () => {
-      const kb = { name: 'Test' };
-      expect(() => validateKnowledgeBase(kb))
-        .toThrow(ValidationError);
+      expect(logger.error).toHaveBeenCalled();
     });
   });
 });

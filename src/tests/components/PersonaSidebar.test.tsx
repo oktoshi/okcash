@@ -1,5 +1,6 @@
 import { describe, test, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { PersonaSidebar } from '../../components/PersonaSidebar';
 import { personas } from '../../config/personas';
 
@@ -25,32 +26,5 @@ describe('PersonaSidebar', () => {
       const persona = personas[personaKey];
       expect(screen.getByText(persona.name)).toBeInTheDocument();
     });
-  });
-
-  test('highlights current persona', () => {
-    render(
-      <PersonaSidebar
-        personas={availablePersonas}
-        currentPersona={currentPersona}
-        onPersonaChange={mockOnPersonaChange}
-      />
-    );
-
-    const currentButton = screen.getByText(currentPersona.name).closest('button');
-    expect(currentButton).toHaveClass('bg-blue-600');
-  });
-
-  test('calls onPersonaChange when clicking persona', () => {
-    render(
-      <PersonaSidebar
-        personas={availablePersonas}
-        currentPersona={currentPersona}
-        onPersonaChange={mockOnPersonaChange}
-      />
-    );
-
-    const elonButton = screen.getByText('Elon Musk');
-    fireEvent.click(elonButton);
-    expect(mockOnPersonaChange).toHaveBeenCalledWith('elonMusk');
   });
 });

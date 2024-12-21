@@ -11,6 +11,7 @@ export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isNearBottomRef = useRef(true);
+  const scrollHandlerRef = useRef<() => void>();
 
   const checkIfNearBottom = useCallback(() => {
     const container = scrollContainerRef.current;
@@ -25,11 +26,6 @@ export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
     checkIfNearBottom();
   }, [checkIfNearBottom]);
 
-  const debouncedScroll = useCallback(
-    debounce(handleScroll, 100),
-    [handleScroll]
-  );
-
   const scrollToBottom = useCallback((behavior: ScrollBehavior = 'smooth') => {
     requestAnimationFrame(() => {
       if (scrollContainerRef.current && messagesEndRef.current && isNearBottomRef.current) {
@@ -38,19 +34,19 @@ export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
     });
   }, []);
 
-  const handleContentUpdate = useCallback(() => {
-    if (isNearBottomRef.current) {
-      scrollToBottom('auto');
-    }
-  }, [scrollToBottom]);
-
   useEffect(() => {
     const container = scrollContainerRef.current;
-    if (container) {
-      container.addEventListener('scroll', debouncedScroll);
-      return () => container.removeEventListener('scroll', debouncedScroll);
-    }
-  }, [debouncedScroll]);
+    if (!container) return;
+
+    scrollHandlerRef.current = debounce(handleScroll, 100);
+    container.addEventListener('scroll', scrollHandlerRef.current);
+    
+    return () => {
+      if (scrollHandlerRef.current) {
+        container.removeEventListener('scroll', scrollHandlerRef.current);
+      }
+    };
+  }, [handleScroll]);
 
   useEffect(() => {
     if (messages.length > 0 || isTyping) {
@@ -65,6 +61,10 @@ export function useChatScroll({ messages, isTyping }: UseChatScrollProps) {
   return {
     scrollContainerRef,
     messagesEndRef,
-    handleContentUpdate
+    handleContentUpdate: useCallback(() => {
+      if (isNearBottomRef.current) {
+        scrollToBottom('auto');
+      }
+    }, [scrollToBottom])
   };
 }

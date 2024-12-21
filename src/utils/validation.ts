@@ -32,16 +32,21 @@ const knowledgeBaseSchema = z.object({
   topics: z.record(z.array(z.string())),
   prompts: z.record(z.string()),
   sampleQA: z.record(z.array(z.object({
-    question: z.string(),
-    answer: z.string()
+    question: z.string().min(1),
+    answer: z.string().min(1)
   }))).optional()
 });
 
-export function validateMessages(messages: unknown[]): Message[] {
+export function validateMessages(messages: unknown): Message[] {
   try {
     if (!Array.isArray(messages)) {
       throw new ValidationError('Messages must be an array');
     }
+    
+    if (messages.length === 0) {
+      throw new ValidationError('Messages array cannot be empty');
+    }
+
     return z.array(messageSchema).parse(messages);
   } catch (error) {
     logger.error('Message validation failed:', error);

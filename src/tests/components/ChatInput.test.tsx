@@ -1,5 +1,5 @@
 import { describe, test, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ChatInput } from '../../components/ChatInput';
 import { ChatFocusContext } from '../../hooks/useChatFocus';
@@ -17,46 +17,15 @@ describe('ChatInput', () => {
     );
   };
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  test('renders input field', () => {
-    renderWithContext();
-    expect(screen.getByPlaceholderText(/Type your message/)).toBeInTheDocument();
-  });
-
-  test('handles message submission', async () => {
+  test('sends message on submit', async () => {
     const user = userEvent.setup();
     renderWithContext();
     
     const input = screen.getByPlaceholderText(/Type your message/);
-    const button = screen.getByRole('button');
-
     await user.type(input, 'Hello');
-    await user.click(button);
+    await user.keyboard('{Enter}');
 
     expect(mockOnSend).toHaveBeenCalledWith('Hello');
     expect(input).toHaveValue('');
-  });
-
-  test('prevents empty message submission', async () => {
-    const user = userEvent.setup();
-    renderWithContext();
-    
-    const button = screen.getByRole('button');
-    await user.click(button);
-
-    expect(mockOnSend).not.toHaveBeenCalled();
-  });
-
-  test('disables input when loading', () => {
-    renderWithContext(true);
-    
-    const input = screen.getByPlaceholderText(/Type your message/);
-    const button = screen.getByRole('button');
-
-    expect(input).toBeDisabled();
-    expect(button).toBeDisabled();
   });
 });

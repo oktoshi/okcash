@@ -1,6 +1,12 @@
-import { beforeAll, afterAll, afterEach, vi } from 'vitest';
+import { beforeAll, afterAll, afterEach, beforeEach, vi } from 'vitest';
 import { TextEncoder, TextDecoder } from 'util';
 import '@testing-library/jest-dom';
+
+// Make test lifecycle hooks globally available
+globalThis.beforeEach = beforeEach;
+globalThis.beforeAll = beforeAll;
+globalThis.afterEach = afterEach;
+globalThis.afterAll = afterAll;
 
 // Mock Web APIs
 global.TextEncoder = TextEncoder;

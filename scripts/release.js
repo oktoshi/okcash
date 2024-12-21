@@ -46,6 +46,7 @@ function main() {
   const [,, type] = process.argv;
 
   if (!TYPES[type]) {
+    // eslint-disable-next-line no-console
     console.error(`Invalid release type. Use: ${Object.keys(TYPES).join(', ')}`);
     process.exit(1);
   }
@@ -56,14 +57,21 @@ function main() {
     generateChangelog();
     createGitTag(newVersion);
     
+    // eslint-disable-next-line no-console
     console.log('\nRelease completed successfully!');
+    // eslint-disable-next-line no-console
     console.log(`\nVersion: v${newVersion}`);
+    // eslint-disable-next-line no-console
     console.log('\nNext steps:');
+    // eslint-disable-next-line no-console
     console.log('1. Push changes: git push origin main');
+    // eslint-disable-next-line no-console
     console.log(`2. Push tag: git push origin v${newVersion}`);
+    // eslint-disable-next-line no-console
     console.log('3. Create GitHub release with the generated changelog');
     
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Release failed:', error);
     process.exit(1);
   }

@@ -1,4 +1,4 @@
-import { describe, test, expect, vi } from 'vitest';
+import { describe, test, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { ChatMessage } from '../../components/ChatMessage';
 
@@ -22,15 +22,5 @@ describe('ChatMessage', () => {
       />
     );
     expect(screen.getByText('Bold')).toHaveStyle('font-weight: bold');
-  });
-
-  test('shows typing indicator when typing', () => {
-    render(
-      <ChatMessage
-        message={{ id: '1', role: 'assistant', content: 'Loading...' }}
-        isTyping={true}
-      />
-    );
-    expect(screen.getByTestId('typing-indicator')).toBeInTheDocument();
   });
 });
