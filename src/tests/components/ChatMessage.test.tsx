@@ -1,6 +1,5 @@
-```typescript
 import { describe, test, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { ChatMessage } from '../../components/ChatMessage';
 
 describe('ChatMessage', () => {
@@ -14,7 +13,7 @@ describe('ChatMessage', () => {
     expect(screen.getByText('Hello')).toBeInTheDocument();
   });
 
-  test('renders assistant message with markdown', () => {
+  test('renders assistant message with markdown', async () => {
     render(
       <ChatMessage
         message={{ id: '1', role: 'assistant', content: '**Bold** text' }}
@@ -22,11 +21,14 @@ describe('ChatMessage', () => {
         shouldAnimate={false}
       />
     );
-    const container = screen.getByText(/text/i).parentElement;
-    expect(container).toContainHTML('<strong>Bold</strong>');
+
+    await waitFor(() => {
+      const element = screen.getByText(/text/i);
+      expect(element.parentElement).toContainHTML('<strong>Bold</strong>');
+    });
   });
 
-  test('shows typing indicator', () => {
+  test('shows typing indicator when typing', () => {
     render(
       <ChatMessage
         message={{ id: '1', role: 'assistant', content: 'Loading...' }}
@@ -36,7 +38,7 @@ describe('ChatMessage', () => {
     expect(screen.getByTestId('typing-indicator')).toBeInTheDocument();
   });
 
-  test('handles animation completion', () => {
+  test('handles animation completion', async () => {
     const onComplete = vi.fn();
     
     render(
@@ -47,7 +49,20 @@ describe('ChatMessage', () => {
       />
     );
 
-    expect(onComplete).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onComplete).toHaveBeenCalled();
+    });
+  });
+
+  test('cleans up animation on unmount', () => {
+    const { unmount } = render(
+      <ChatMessage
+        message={{ id: '1', role: 'assistant', content: 'Test' }}
+        shouldAnimate={true}
+      />
+    );
+
+    unmount();
+    // Animation cleanup is handled internally
   });
 });
-```

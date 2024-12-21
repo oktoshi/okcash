@@ -1,4 +1,3 @@
-```typescript
 import { describe, test, expect, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -7,7 +6,7 @@ import { ChatFocusContext } from '../../hooks/useChatFocus';
 
 describe('ChatInput', () => {
   const mockOnSend = vi.fn();
-  const mockInputRef = { current: null };
+  const mockInputRef = { current: document.createElement('input') };
   const mockFocusInput = vi.fn();
 
   const renderWithContext = (disabled = false) => {
@@ -67,4 +66,3 @@ describe('ChatInput', () => {
     });
   });
 });
-```
