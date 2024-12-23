@@ -1,4 +1,4 @@
-[@okcashpro/okai v0.1.5-alpha.5](../index.md) / Models
+[@okcashpro/okai v0.1.7-alpha.1](../index.md) / Models
 
 # Type Alias: Models
 
@@ -95,6 +95,10 @@ Model configurations by provider
 ### venice
 
 > **venice**: [`Model`](Model.md)
+
+### akash\_chat\_api
+
+> **akash\_chat\_api**: [`Model`](Model.md)
 
 ## Defined in
 

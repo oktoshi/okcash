@@ -5,8 +5,8 @@
     "type": "module",
     "types": "dist/index.d.ts",
     "dependencies": {
-        "@multiversx/sdk-core": "13.15.0",
         "@okcashpro/okai": "workspace:*",
+        "@multiversx/sdk-core": "13.15.0",
         "bignumber.js": "9.1.2",
         "browserify": "^17.0.1",
         "esbuild-plugin-polyfill-node": "^0.3.0",

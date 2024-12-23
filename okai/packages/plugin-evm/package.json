@@ -5,10 +5,10 @@
     "type": "module",
     "types": "dist/index.d.ts",
     "dependencies": {
+        "@okcashpro/okai": "workspace:*",
         "@lifi/data-types": "5.15.5",
         "@lifi/sdk": "3.4.1",
         "@lifi/types": "16.3.0",
-        "@okcashpro/okai": "workspace:*",
         "tsup": "8.3.5",
         "viem": "2.21.53"
     },

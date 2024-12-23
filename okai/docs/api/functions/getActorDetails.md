@@ -1,4 +1,4 @@
-[@okcashpro/okai v0.1.5-alpha.5](../index.md) / getActorDetails
+[@okcashpro/okai v0.1.7-alpha.1](../index.md) / getActorDetails
 
 # Function: getActorDetails()
 

@@ -7,10 +7,10 @@
     "dependencies": {
         "@okcashpro/okai": "workspace:*",
         "@ref-finance/ref-sdk": "^1.4.6",
-        "bignumber.js": "9.1.2",
+        "tsup": "8.3.5",
         "near-api-js": "5.0.1",
-        "node-cache": "5.1.2",
-        "tsup": "8.3.5"
+        "bignumber.js": "9.1.2",
+        "node-cache": "5.1.2"
     },
     "scripts": {
         "build": "tsup --format esm,cjs --dts",
@@ -19,7 +19,7 @@
         "lint": "eslint . --fix"
     },
     "peerDependencies": {
-        "form-data": "4.0.1",
-        "whatwg-url": "7.1.0"
+        "whatwg-url": "7.1.0",
+        "form-data": "4.0.1"
     }
 }
